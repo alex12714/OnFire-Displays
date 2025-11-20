@@ -82,6 +82,11 @@ code {
     }
 }
 
+/* Ensure Radix portals render on top */
+[data-radix-portal] {
+    z-index: 9999 !important;
+}
+
 @layer base {
     [data-debug-wrapper="true"] {
         display: contents !important;
