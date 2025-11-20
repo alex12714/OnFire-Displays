@@ -72,17 +72,24 @@ const Dashboard = () => {
         </div>
         <div className="header-controls">
           <div className="conversation-selector">
-            <label htmlFor="conversation-select">Select Group:</label>
+            <label htmlFor="conversation-select">Select Conversation:</label>
             <Select value={selectedConversation} onValueChange={setSelectedConversation}>
-              <SelectTrigger className="select-trigger">
+              <SelectTrigger className="select-trigger" id="conversation-select">
                 <SelectValue placeholder="Choose a conversation" />
               </SelectTrigger>
               <SelectContent>
-                {conversations.map((convo) => (
-                  <SelectItem key={convo.id} value={convo.id}>
-                    {convo.name || `Conversation ${convo.id.substring(0, 8)}`}
-                  </SelectItem>
-                ))}
+                {conversations.map((convo) => {
+                  const displayName = convo.name || `Conversation ${convo.id.substring(0, 8)}`;
+                  const typeEmoji = convo.conversation_type === 'group' ? '👥' : 
+                                   convo.conversation_type === 'channel' ? '📢' : '💬';
+                  const messageCount = convo.message_count > 0 ? ` (${convo.message_count} msgs)` : '';
+                  
+                  return (
+                    <SelectItem key={convo.id} value={convo.id}>
+                      {typeEmoji} {displayName}{messageCount}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
