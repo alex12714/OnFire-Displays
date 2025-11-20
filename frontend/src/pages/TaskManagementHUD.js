@@ -20,17 +20,36 @@ const TaskManagementHUD = ({ conversationId }) => {
   const loadTasks = async () => {
     setLoading(true);
     try {
+      console.log('Loading tasks for conversation:', conversationId);
       const apiTasks = await onFireAPI.getTasks(conversationId);
+      console.log('Loaded tasks:', apiTasks);
+      
+      if (!apiTasks || apiTasks.length === 0) {
+        console.log('No tasks found for this conversation');
+        setTasks([]);
+        setCompletedTasks([]);
+        setPeople([]);
+        return;
+      }
       
       // Separate completed and active tasks
       const completed = apiTasks.filter(t => t.status === 'completed');
       const active = apiTasks.filter(t => t.status !== 'completed');
+      
+      console.log(`Found ${active.length} active tasks and ${completed.length} completed tasks`);
       
       setTasks(active);
       setCompletedTasks(completed);
       
       // Extract unique assignees to build people list
       const uniqueUserIds = new Set();
+      const userData = onFireAPI.getUserData();
+      
+      // Always include current user
+      if (userData?.id) {
+        uniqueUserIds.add(userData.id);
+      }
+      
       apiTasks.forEach(task => {
         if (task.assignee_user_ids && Array.isArray(task.assignee_user_ids)) {
           task.assignee_user_ids.forEach(id => uniqueUserIds.add(id));
@@ -38,20 +57,38 @@ const TaskManagementHUD = ({ conversationId }) => {
         if (task.completed_by_user_id) {
           uniqueUserIds.add(task.completed_by_user_id);
         }
+        if (task.created_by_user_id) {
+          uniqueUserIds.add(task.created_by_user_id);
+        }
       });
       
-      // Generate people list with colors
+      // Generate people list with colors and better names
       const colors = ['#ff6b35', '#ff8c42', '#ff9a56', '#ffa86b', '#ffb680', '#ffc494', '#ffd2a8'];
-      const peopleList = Array.from(uniqueUserIds).map((userId, index) => ({
-        id: userId,
-        name: `User ${userId.substring(0, 8)}`,
-        initial: String.fromCharCode(65 + (index % 26)),
-        color: colors[index % colors.length]
-      }));
+      const peopleList = Array.from(uniqueUserIds).map((userId, index) => {
+        let name = `User ${userId.substring(0, 8)}`;
+        let initial = String.fromCharCode(65 + (index % 26));
+        
+        // Use actual user data if it's the current user
+        if (userId === userData?.id) {
+          name = userData.first_name || userData.username || name;
+          initial = (userData.first_name || userData.username || 'U')[0].toUpperCase();
+        }
+        
+        return {
+          id: userId,
+          name: name,
+          initial: initial,
+          color: colors[index % colors.length]
+        };
+      });
       
+      console.log('Generated people list:', peopleList);
       setPeople(peopleList);
     } catch (error) {
       console.error('Error loading tasks:', error);
+      setTasks([]);
+      setCompletedTasks([]);
+      setPeople([]);
     } finally {
       setLoading(false);
     }
