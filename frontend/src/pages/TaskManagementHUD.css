@@ -66,13 +66,49 @@
 
 .task-hud-title {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     background: linear-gradient(135deg, var(--orange-primary) 0%, var(--orange-light) 50%, var(--orange-primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-size: 3em;
     font-weight: 800;
+}
+
+.conversation-info {
+    background: linear-gradient(135deg, rgba(26, 47, 79, 0.6) 0%, rgba(10, 22, 40, 0.9) 100%);
+    border: 2px solid rgba(255, 107, 53, 0.3);
+    border-radius: 15px;
+    padding: 15px 25px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.info-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1em;
+}
+
+.info-text strong {
+    color: var(--orange-light);
+    font-weight: 700;
+}
+
+.info-stats {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .conversation-info {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
 .progress-section {
