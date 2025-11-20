@@ -71,17 +71,26 @@ class OnFireAPI {
   // Conversations
   async getConversations() {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/rpc/get_user_conversations`,
-        {
-          p_conversation_type: 'group'
-        },
+      // Fetch all active conversations (both direct GET and RPC endpoint)
+      const response = await axios.get(
+        `${API_BASE_URL}/conversations?status=eq.active&order=last_message_at.desc,created_at.desc&select=id,name,conversation_type,status,description,avatar,message_count,last_message_at,created_at`,
         { headers: this.getAuthHeaders() }
       );
-      return response.data;
+      return response.data || [];
     } catch (error) {
       console.error('Error fetching conversations:', error);
-      throw error;
+      // Fallback to RPC endpoint if direct access fails
+      try {
+        const rpcResponse = await axios.post(
+          `${API_BASE_URL}/rpc/get_user_conversations`,
+          {},
+          { headers: this.getAuthHeaders() }
+        );
+        return rpcResponse.data || [];
+      } catch (rpcError) {
+        console.error('Error fetching conversations via RPC:', rpcError);
+        throw error;
+      }
     }
   }
 
