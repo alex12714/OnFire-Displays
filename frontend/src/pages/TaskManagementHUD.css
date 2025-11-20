@@ -287,9 +287,12 @@
 }
 
 .task-card .avatar {
-    width: 55px;
-    height: 55px;
+    width: 55px !important;
+    height: 55px !important;
     font-size: 1.3em;
+    flex-shrink: 0;
+    min-width: 55px;
+    min-height: 55px;
 }
 
 .task-card .avatar:active {
