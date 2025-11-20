@@ -246,7 +246,13 @@ const TaskManagementHUD = ({ conversationId }) => {
         <div className="tasks-section">
           <div className="section-title">Available Tasks</div>
           {tasks.length === 0 ? (
-            <div className="no-tasks-message">No active tasks available</div>
+            <div className="no-tasks-message">
+              <div style={{ fontSize: '3em', marginBottom: '20px' }}>📋</div>
+              <p>No active tasks found for this conversation</p>
+              <p style={{ fontSize: '0.9em', marginTop: '10px', color: 'rgba(255, 255, 255, 0.6)' }}>
+                Tasks with chat_id matching this conversation will appear here
+              </p>
+            </div>
           ) : (
             <div className="task-grid">
               {tasks.map(task => (
