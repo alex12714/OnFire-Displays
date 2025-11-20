@@ -1,58 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import './TaskManagementHUD.css';
 import { Coins } from 'lucide-react';
+import onFireAPI from '../services/api';
 
-const TaskManagementHUD = () => {
-  const defaultPeople = [
-    { id: 1, name: 'Alex', initial: 'A', color: '#ff6b35' },
-    { id: 2, name: 'Sam', initial: 'S', color: '#ff8c42' },
-    { id: 3, name: 'Jordan', initial: 'J', color: '#ff9a56' },
-    { id: 4, name: 'Taylor', initial: 'T', color: '#ffa86b' },
-    { id: 5, name: 'Morgan', initial: 'M', color: '#ffb680' }
-  ];
-
-  const defaultTasks = [
-    { id: 1, title: 'Clean Kitchen', coins: 5, image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400' },
-    { id: 2, title: 'Do Laundry', coins: 4, image: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400' },
-    { id: 3, title: 'Vacuum Living Room', coins: 3, image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400' },
-    { id: 4, title: 'Wash Dishes', coins: 3, image: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400' },
-    { id: 5, title: 'Take Out Trash', coins: 2, image: 'https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?w=400' },
-    { id: 6, title: 'Clean Bathroom', coins: 5, image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400' },
-    { id: 7, title: 'Mow Lawn', coins: 6, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400' },
-    { id: 8, title: 'Organize Closet', coins: 4, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400' }
-  ];
-
-  const [people] = useState(() => {
-    const saved = localStorage.getItem('taskHUD_people');
-    return saved ? JSON.parse(saved) : defaultPeople;
-  });
-
-  const [tasks] = useState(() => {
-    const saved = localStorage.getItem('taskHUD_tasks');
-    return saved ? JSON.parse(saved) : defaultTasks;
-  });
-
-  const [completedTasks, setCompletedTasks] = useState(() => {
-    const saved = localStorage.getItem('taskHUD_completed');
-    return saved ? JSON.parse(saved) : [];
-  });
-
+const TaskManagementHUD = ({ conversationId }) => {
+  const [tasks, setTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
+  const [people, setPeople] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({ personName: '', taskTitle: '', coins: 0 });
 
   useEffect(() => {
-    localStorage.setItem('taskHUD_people', JSON.stringify(people));
-  }, [people]);
+    if (conversationId) {
+      loadTasks();
+    }
+  }, [conversationId]);
 
-  useEffect(() => {
-    localStorage.setItem('taskHUD_tasks', JSON.stringify(tasks));
-  }, [tasks]);
+  const loadTasks = async () => {
+    setLoading(true);
+    try {
+      const apiTasks = await onFireAPI.getTasks(conversationId);
+      
+      // Separate completed and active tasks
+      const completed = apiTasks.filter(t => t.status === 'completed');
+      const active = apiTasks.filter(t => t.status !== 'completed');
+      
+      setTasks(active);
+      setCompletedTasks(completed);
+      
+      // Extract unique assignees to build people list
+      const uniqueUserIds = new Set();
+      apiTasks.forEach(task => {
+        if (task.assignee_user_ids && Array.isArray(task.assignee_user_ids)) {
+          task.assignee_user_ids.forEach(id => uniqueUserIds.add(id));
+        }
+        if (task.completed_by_user_id) {
+          uniqueUserIds.add(task.completed_by_user_id);
+        }
+      });
+      
+      // Generate people list with colors
+      const colors = ['#ff6b35', '#ff8c42', '#ff9a56', '#ffa86b', '#ffb680', '#ffc494', '#ffd2a8'];
+      const peopleList = Array.from(uniqueUserIds).map((userId, index) => ({
+        id: userId,
+        name: `User ${userId.substring(0, 8)}`,
+        initial: String.fromCharCode(65 + (index % 26)),
+        color: colors[index % colors.length]
+      }));
+      
+      setPeople(peopleList);
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => {
-    localStorage.setItem('taskHUD_completed', JSON.stringify(completedTasks));
-  }, [completedTasks]);
-
-  const completeTask = (taskId, personId) => {
+  const completeTask = async (taskId, personId) => {
     const task = tasks.find(t => t.id === taskId);
     const person = people.find(p => p.id === personId);
     
@@ -60,22 +65,19 @@ const TaskManagementHUD = () => {
       setModalData({
         personName: person.name,
         taskTitle: task.title,
-        coins: task.coins
+        coins: Math.ceil((task.estimated_time_minutes || 30) / 10) // Estimate coins based on time
       });
       setShowModal(true);
       
-      setTimeout(() => {
-        setCompletedTasks(prev => [...prev, {
-          taskId: task.id,
-          personId: person.id,
-          taskTitle: task.title,
-          personName: person.name,
-          personInitial: person.initial,
-          personColor: person.color,
-          coins: task.coins,
-          completedAt: Date.now()
-        }]);
-      }, 500);
+      try {
+        await onFireAPI.completeTask(taskId, personId);
+        
+        setTimeout(() => {
+          loadTasks(); // Reload tasks after completion
+        }, 500);
+      } catch (error) {
+        console.error('Error completing task:', error);
+      }
 
       setTimeout(() => {
         setShowModal(false);
@@ -83,39 +85,27 @@ const TaskManagementHUD = () => {
     }
   };
 
-  const uncompleteTask = (taskId) => {
-    setCompletedTasks(prev => prev.filter(ct => ct.taskId !== taskId));
-  };
-
-  const handleTaskThumbnailClick = (taskId, personName, completedAt) => {
-    const canUncomplete = (Date.now() - completedAt) < 3600000;
-    const task = tasks.find(t => t.id === taskId);
-    
-    if (canUncomplete && task && window.confirm(`Remove "${task.title}" from ${personName}'s completed tasks?`)) {
-      uncompleteTask(taskId);
-    } else if (!canUncomplete) {
-      alert(`This task was completed more than 1 hour ago and cannot be undone.`);
+  const uncompleteTask = async (taskId) => {
+    try {
+      await onFireAPI.uncompleteTask(taskId);
+      loadTasks();
+    } catch (error) {
+      console.error('Error uncompleting task:', error);
     }
   };
 
-  const getActiveTasks = () => {
-    return tasks.filter(task => 
-      !completedTasks.some(ct => ct.taskId === task.id)
-    );
-  };
-
-  const getCompletedByPerson = () => {
-    const grouped = {};
-    completedTasks.forEach(ct => {
-      if (!grouped[ct.personId]) grouped[ct.personId] = [];
-      grouped[ct.personId].push(ct);
-    });
-    return grouped;
+  const handleTaskThumbnailClick = (task) => {
+    const person = people.find(p => p.id === task.completed_by_user_id);
+    if (window.confirm(`Remove "${task.title}" from ${person?.name || 'completed'} tasks?`)) {
+      uncompleteTask(task.id);
+    }
   };
 
   const getPersonProgress = (personId) => {
-    const personTasks = completedTasks.filter(ct => ct.personId === personId);
-    const totalCoins = personTasks.reduce((sum, ct) => sum + ct.coins, 0);
+    const personCompletedTasks = completedTasks.filter(t => t.completed_by_user_id === personId);
+    const totalCoins = personCompletedTasks.reduce((sum, t) => {
+      return sum + Math.ceil((t.estimated_time_minutes || 30) / 10);
+    }, 0);
     
     return {
       total: totalCoins,
@@ -125,13 +115,47 @@ const TaskManagementHUD = () => {
     };
   };
 
-  const getTimeAgo = (timestamp) => {
-    const timeAgo = Math.floor((Date.now() - timestamp) / 60000);
-    if (timeAgo === 0) return 'Now';
-    if (timeAgo === 1) return '1m';
-    if (timeAgo < 60) return `${timeAgo}m`;
-    return `${Math.floor(timeAgo/60)}h`;
+  const getCompletedByPerson = () => {
+    const grouped = {};
+    completedTasks.forEach(task => {
+      const personId = task.completed_by_user_id;
+      if (!personId) return;
+      
+      if (!grouped[personId]) {
+        const person = people.find(p => p.id === personId);
+        grouped[personId] = {
+          person: person || { id: personId, name: 'Unknown', initial: 'U', color: '#999' },
+          tasks: []
+        };
+      }
+      grouped[personId].tasks.push(task);
+    });
+    return grouped;
   };
+
+  const getTaskCoins = (task) => {
+    return Math.ceil((task.estimated_time_minutes || 30) / 10);
+  };
+
+  const getTimeAgo = (timestamp) => {
+    const now = new Date();
+    const taskDate = new Date(timestamp);
+    const diffMinutes = Math.floor((now - taskDate) / 60000);
+    
+    if (diffMinutes === 0) return 'Now';
+    if (diffMinutes === 1) return '1m';
+    if (diffMinutes < 60) return `${diffMinutes}m`;
+    return `${Math.floor(diffMinutes/60)}h`;
+  };
+
+  if (loading) {
+    return (
+      <div className="task-hud-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading tasks...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="task-hud-container">
@@ -184,36 +208,44 @@ const TaskManagementHUD = () => {
         {/* Available Tasks Section */}
         <div className="tasks-section">
           <div className="section-title">Available Tasks</div>
-          <div className="task-grid">
-            {getActiveTasks().map(task => (
-              <div key={task.id} className="task-card">
-                <div className="task-coins">
-                  <Coins size={20} />
-                  <span>{task.coins}</span>
-                </div>
-                <img src={task.image} alt={task.title} className="task-image" />
-                <div className="task-content">
-                  <div className="task-title">{task.title}</div>
-                  <div className="avatars-row">
-                    {people.map(person => (
-                      <div
-                        key={person.id}
-                        className="avatar"
-                        style={{ background: person.color }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          completeTask(task.id, person.id);
-                        }}
-                        title={`Mark as completed by ${person.name}`}
-                      >
-                        {person.initial}
-                      </div>
-                    ))}
+          {tasks.length === 0 ? (
+            <div className="no-tasks-message">No active tasks available</div>
+          ) : (
+            <div className="task-grid">
+              {tasks.map(task => (
+                <div key={task.id} className="task-card">
+                  <div className="task-coins">
+                    <Coins size={20} />
+                    <span>{getTaskCoins(task)}</span>
+                  </div>
+                  <img 
+                    src={task.cover_image_url || task.attachment_urls?.[0] || 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=400'} 
+                    alt={task.title} 
+                    className="task-image" 
+                  />
+                  <div className="task-content">
+                    <div className="task-title">{task.title}</div>
+                    <div className="avatars-row">
+                      {people.map(person => (
+                        <div
+                          key={person.id}
+                          className="avatar"
+                          style={{ background: person.color }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            completeTask(task.id, person.id);
+                          }}
+                          title={`Mark as completed by ${person.name}`}
+                        >
+                          {person.initial}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Completed Tasks Section */}
@@ -229,37 +261,36 @@ const TaskManagementHUD = () => {
             </div>
           ) : (
             <div className="completed-gallery">
-              {Object.entries(getCompletedByPerson()).map(([personId, personTasks]) => {
-                const person = personTasks[0];
-                const totalCoins = personTasks.reduce((sum, ct) => sum + ct.coins, 0);
+              {Object.entries(getCompletedByPerson()).map(([personId, data]) => {
+                const totalCoins = data.tasks.reduce((sum, t) => sum + getTaskCoins(t), 0);
                 return (
                   <div key={personId} className="completed-person-row">
                     <div className="completed-person-avatar">
-                      <div className="avatar" style={{ background: person.personColor }}>
-                        {person.personInitial}
+                      <div className="avatar" style={{ background: data.person.color }}>
+                        {data.person.initial}
                       </div>
-                      <div className="completed-person-name">{person.personName}</div>
+                      <div className="completed-person-name">{data.person.name}</div>
                       <div style={{ color: '#FFD700', fontSize: '0.8em', fontWeight: '700' }}>
                         {totalCoins} total
                       </div>
                     </div>
                     <div className="completed-tasks-gallery">
-                      {personTasks.map((ct, index) => {
-                        const task = tasks.find(t => t.id === ct.taskId);
-                        return (
-                          <div
-                            key={`${ct.taskId}-${index}`}
-                            className="completed-task-thumbnail"
-                            onClick={() => handleTaskThumbnailClick(ct.taskId, ct.personName, ct.completedAt)}
-                            title={ct.taskTitle}
-                          >
-                            <img src={task?.image} alt={ct.taskTitle} />
-                            <div className="task-coins-badge">{ct.coins}</div>
-                            <div className="task-time-badge">{getTimeAgo(ct.completedAt)}</div>
-                            <div className="task-tooltip">{ct.taskTitle}</div>
-                          </div>
-                        );
-                      })}
+                      {data.tasks.map((task) => (
+                        <div
+                          key={task.id}
+                          className="completed-task-thumbnail"
+                          onClick={() => handleTaskThumbnailClick(task)}
+                          title={task.title}
+                        >
+                          <img 
+                            src={task.cover_image_url || task.attachment_urls?.[0] || 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=400'} 
+                            alt={task.title} 
+                          />
+                          <div className="task-coins-badge">{getTaskCoins(task)}</div>
+                          <div className="task-time-badge">{getTimeAgo(task.updated_at)}</div>
+                          <div className="task-tooltip">{task.title}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 );
