@@ -65,6 +65,38 @@
   box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
 }
 
+/* Fix z-index for select dropdown */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}
+
+/* Style the select content */
+[role="listbox"] {
+  background: rgba(10, 22, 40, 0.98) !important;
+  border: 2px solid rgba(255, 107, 53, 0.5) !important;
+  backdrop-filter: blur(10px);
+  z-index: 9999 !important;
+}
+
+[role="option"] {
+  color: white !important;
+  padding: 10px 12px !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease;
+}
+
+[role="option"]:hover,
+[role="option"][data-highlighted] {
+  background: rgba(255, 107, 53, 0.3) !important;
+  color: #ff9a56 !important;
+}
+
+[role="option"][data-state="checked"] {
+  background: rgba(255, 107, 53, 0.5) !important;
+  color: white !important;
+  font-weight: 600;
+}
+
 .refresh-button {
   background: rgba(26, 47, 79, 0.6);
   border: 2px solid rgba(255, 107, 53, 0.3);
