@@ -28,6 +28,14 @@ const Dashboard = () => {
     setError('');
     try {
       const convos = await onFireAPI.getConversations();
+      console.log('Loaded conversations:', convos);
+      
+      if (!convos || convos.length === 0) {
+        setError('No conversations found. Please create a conversation first.');
+        setConversations([]);
+        return;
+      }
+      
       setConversations(convos);
       
       // Auto-select first conversation if available
@@ -36,7 +44,7 @@ const Dashboard = () => {
       }
     } catch (err) {
       setError('Failed to load conversations. Please try again.');
-      console.error(err);
+      console.error('Conversation loading error:', err);
     } finally {
       setLoading(false);
     }
