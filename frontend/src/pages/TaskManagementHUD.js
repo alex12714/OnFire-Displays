@@ -198,6 +198,16 @@ const TaskManagementHUD = ({ conversationId }) => {
     <div className="task-hud-container">
       <div className="task-hud-content">
         <h1 className="task-hud-title">Task Management HUD</h1>
+        
+        {/* Conversation Info */}
+        <div className="conversation-info">
+          <div className="info-text">
+            Showing tasks for conversation: <strong>{conversationId?.substring(0, 8)}...</strong>
+          </div>
+          <div className="info-stats">
+            {tasks.length} active • {completedTasks.length} completed • {people.length} people
+          </div>
+        </div>
 
         {/* Progress Section */}
         <div className="progress-section">
