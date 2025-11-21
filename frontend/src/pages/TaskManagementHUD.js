@@ -41,11 +41,10 @@ const TaskManagementHUD = ({ conversationId }) => {
       setTasks(active);
       setCompletedTasks(completed);
       
-      // Extract unique assignees to build people list
+      // Extract unique user IDs
       const uniqueUserIds = new Set();
       const userData = onFireAPI.getUserData();
       
-      // Always include current user
       if (userData?.id) {
         uniqueUserIds.add(userData.id);
       }
@@ -62,27 +61,43 @@ const TaskManagementHUD = ({ conversationId }) => {
         }
       });
       
-      // Generate people list with colors and better names
+      // Fetch actual user data with avatars
+      console.log('Fetching user data for:', Array.from(uniqueUserIds));
+      const usersData = await onFireAPI.getUsers(Array.from(uniqueUserIds));
+      console.log('Fetched users data:', usersData);
+      
+      // Create user map for quick lookup
+      const userMap = {};
+      usersData.forEach(user => {
+        userMap[user.id] = user;
+      });
+      
+      // Generate people list with actual user data and avatars
       const colors = ['#ff6b35', '#ff8c42', '#ff9a56', '#ffa86b', '#ffb680', '#ffc494', '#ffd2a8'];
       const peopleList = Array.from(uniqueUserIds).map((userId, index) => {
+        const user = userMap[userId] || (userId === userData?.id ? userData : null);
+        
         let name = `User ${userId.substring(0, 8)}`;
         let initial = String.fromCharCode(65 + (index % 26));
+        let avatar = null;
         
-        // Use actual user data if it's the current user
-        if (userId === userData?.id) {
-          name = userData.first_name || userData.username || name;
-          initial = (userData.first_name || userData.username || 'U')[0].toUpperCase();
+        if (user) {
+          name = user.first_name || user.username || user.email?.split('@')[0] || name;
+          initial = (user.first_name || user.username || user.email || 'U')[0].toUpperCase();
+          // Check for avatar/profile picture URL
+          avatar = user.avatar || user.profile_picture_url || null;
         }
         
         return {
           id: userId,
           name: name,
           initial: initial,
+          avatar: avatar,
           color: colors[index % colors.length]
         };
       });
       
-      console.log('Generated people list:', peopleList);
+      console.log('Generated people list with avatars:', peopleList);
       setPeople(peopleList);
     } catch (error) {
       console.error('Error loading tasks:', error);
