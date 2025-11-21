@@ -201,7 +201,7 @@ class OnFireAPI {
         from_user_id: transactionData.from_user_id,
         to_user_id: transactionData.to_user_id,
         amount: transactionData.amount,
-        currency: 'PROOF',
+        currency: 'PRF',
         fee: transactionData.fee || 0,
         net_amount: transactionData.net_amount || transactionData.amount,
         related_entity_type: transactionData.related_entity_type || 'task',
