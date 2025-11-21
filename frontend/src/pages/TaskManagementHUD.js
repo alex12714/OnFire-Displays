@@ -222,10 +222,37 @@ const TaskManagementHUD = ({ conversationId }) => {
 
   const uncompleteTask = async (taskId) => {
     try {
+      console.log('Uncompleting task:', taskId);
+      
+      // 1. Update API - change status to not_started
       await onFireAPI.uncompleteTask(taskId);
-      loadTasks();
+      console.log('Task status changed to not_started');
+      
+      // 2. Immediately update local state
+      const completedTask = completedTasks.find(t => t.id === taskId);
+      
+      if (completedTask) {
+        const revertedTask = {
+          ...completedTask,
+          status: 'not_started',
+          completed_by_user_id: null,
+          progress_percentage: 0,
+          updated_at: new Date().toISOString()
+        };
+        
+        // Remove from completed tasks
+        setCompletedTasks(prevCompleted => prevCompleted.filter(t => t.id !== taskId));
+        
+        // Add back to active tasks
+        setTasks(prevTasks => [revertedTask, ...prevTasks]);
+        
+        console.log('UI updated - task moved back to active section');
+      }
+      
     } catch (error) {
       console.error('Error uncompleting task:', error);
+      // Revert UI change by reloading from API
+      loadTasks();
     }
   };
 
