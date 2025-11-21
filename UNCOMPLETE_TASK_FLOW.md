@@ -122,12 +122,8 @@ Completed Tasks: Alex (2 tasks)
 
 ```javascript
 const handleTaskThumbnailClick = (task) => {
-  const person = people.find(p => p.id === task.completed_by_user_id);
-  
-  // Show confirmation
-  if (window.confirm(`Remove "${task.title}" from ${person?.name || 'completed'} tasks?`)) {
-    uncompleteTask(task.id);
-  }
+  // Directly uncomplete without confirmation - instant action
+  uncompleteTask(task.id);
 };
 ```
 
