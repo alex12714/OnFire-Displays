@@ -185,7 +185,7 @@ class OnFireAPI {
 
   async uncompleteTask(taskId) {
     return this.updateTask(taskId, {
-      status: 'pending',
+      status: 'not_started',
       completed_by_user_id: null,
       progress_percentage: 0,
       updated_at: new Date().toISOString()
