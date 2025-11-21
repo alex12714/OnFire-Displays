@@ -235,7 +235,7 @@ console.log('Profile picture:', userData.profile_picture_url);
 ### 2. Check API Response
 ```bash
 # Using curl
-curl -X GET "https://api2.onfire.so/users?id=eq.USER_ID&select=id,avatar,profile_picture_url" \
+curl -X GET "https://api2.onfire.so/user_profiles?user_id=eq.USER_ID&select=user_id,display_name,profile_photo_url" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
