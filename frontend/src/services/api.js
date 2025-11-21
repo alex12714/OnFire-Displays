@@ -194,34 +194,31 @@ class OnFireAPI {
 
   // Transactions
   async createTransaction(transactionData) {
+    // Build payload matching the working curl format
+    // NOTE: related_entity_id expects INTEGER, not UUID, so we exclude it
+    const payload = {
+      transaction_type: 'send',
+      status: 'completed',
+      from_user_id: transactionData.from_user_id,
+      to_user_id: transactionData.to_user_id,
+      amount: transactionData.amount,
+      currency: 'PRF',
+      fee: transactionData.fee || 0,
+      net_amount: transactionData.net_amount || transactionData.amount,
+      related_entity_type: transactionData.related_entity_type || 'task',
+      description: transactionData.description || '',
+      notes: transactionData.notes || ''
+    };
+    
+    // Store task reference in metadata instead of related_entity_id
+    // since related_entity_id expects integer but task IDs are UUIDs
+    if (transactionData.metadata && Object.keys(transactionData.metadata).length > 0) {
+      payload.metadata = transactionData.metadata;
+    }
+    
+    console.log('Creating transaction with payload:', JSON.stringify(payload, null, 2));
+    
     try {
-      // Build payload matching the working curl format
-      const payload = {
-        transaction_type: 'send',
-        status: 'completed',
-        from_user_id: transactionData.from_user_id,
-        to_user_id: transactionData.to_user_id,
-        amount: transactionData.amount,
-        currency: 'PRF',
-        fee: transactionData.fee || 0,
-        net_amount: transactionData.net_amount || transactionData.amount,
-        related_entity_type: transactionData.related_entity_type || 'task',
-        description: transactionData.description || '',
-        notes: transactionData.notes || ''
-      };
-      
-      // Only add related_entity_id if it's provided and valid
-      if (transactionData.related_entity_id) {
-        payload.related_entity_id = String(transactionData.related_entity_id);
-      }
-      
-      // Add metadata only if it's not empty
-      if (transactionData.metadata && Object.keys(transactionData.metadata).length > 0) {
-        payload.metadata = transactionData.metadata;
-      }
-      
-      console.log('Creating transaction with payload:', JSON.stringify(payload, null, 2));
-      
       const response = await axios.post(
         `${API_BASE_URL}/transactions`,
         payload,
