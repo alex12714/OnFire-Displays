@@ -49,12 +49,12 @@ POST https://api2.onfire.so/transactions
 
 ```json
 {
-  "transaction_type": "buy",
+  "transaction_type": "send",
   "status": "completed",
   "from_user_id": "creator-user-id-uuid",
   "to_user_id": "completer-user-id-uuid",
   "amount": 50,
-  "currency": "USD",
+  "currency": "PROOF",
   "fee": 0,
   "net_amount": 50,
   "related_entity_type": "task",
