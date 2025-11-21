@@ -338,8 +338,12 @@ const TaskManagementHUD = ({ conversationId }) => {
                 return (
                   <div key={personId} className="completed-person-row">
                     <div className="completed-person-avatar">
-                      <div className="avatar" style={{ background: data.person.color }}>
-                        {data.person.initial}
+                      <div className="avatar" style={{ background: data.person.avatar ? 'transparent' : data.person.color }}>
+                        {data.person.avatar ? (
+                          <img src={data.person.avatar} alt={data.person.name} className="avatar-image" />
+                        ) : (
+                          data.person.initial
+                        )}
                       </div>
                       <div className="completed-person-name">{data.person.name}</div>
                       <div style={{ color: '#FFD700', fontSize: '0.8em', fontWeight: '700' }}>
