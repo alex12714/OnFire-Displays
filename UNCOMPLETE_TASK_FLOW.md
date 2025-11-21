@@ -239,8 +239,8 @@ if (transaction) {
 ### Expected Behavior
 
 **Completed task thumbnail click:**
-- Shows confirmation dialog
-- If confirmed, task moves immediately
+- Task moves immediately (no confirmation)
+- Instant feedback, no delays
 - No page refresh needed
 - Can be completed again right away
 
