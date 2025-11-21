@@ -302,14 +302,18 @@ const TaskManagementHUD = ({ conversationId }) => {
                         <div
                           key={person.id}
                           className="avatar"
-                          style={{ background: person.color }}
+                          style={{ background: person.avatar ? 'transparent' : person.color }}
                           onClick={(e) => {
                             e.stopPropagation();
                             completeTask(task.id, person.id);
                           }}
                           title={`Mark as completed by ${person.name}`}
                         >
-                          {person.initial}
+                          {person.avatar ? (
+                            <img src={person.avatar} alt={person.name} className="avatar-image" />
+                          ) : (
+                            person.initial
+                          )}
                         </div>
                       ))}
                     </div>
