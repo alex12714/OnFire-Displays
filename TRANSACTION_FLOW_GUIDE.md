@@ -36,7 +36,7 @@ POST https://api2.onfire.so/transactions
 | `from_user_id` | Task creator's ID | Who pays (task creator) |
 | `to_user_id` | Completer's ID | Who receives payment (person who completed) |
 | `amount` | `task.budget_cost` | Payment amount from task budget |
-| `currency` | `"PROOF"` | Currency code (PROOF tokens) |
+| `currency` | `"PRF"` | Currency code (3-letter code for PROOF tokens) |
 | `fee` | `0` | Transaction fee (if any) |
 | `net_amount` | `task.budget_cost` | Net amount after fees |
 | `related_entity_type` | `"task"` | Entity type (task) |
