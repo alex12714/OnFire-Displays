@@ -31,12 +31,12 @@ POST https://api2.onfire.so/transactions
 
 | Field | Value | Description |
 |-------|-------|-------------|
-| `transaction_type` | `"buy"` | Type of transaction (payment for service) |
+| `transaction_type` | `"send"` | Type of transaction (sending payment) |
 | `status` | `"completed"` | Transaction completed successfully |
 | `from_user_id` | Task creator's ID | Who pays (task creator) |
 | `to_user_id` | Completer's ID | Who receives payment (person who completed) |
 | `amount` | `task.budget_cost` | Payment amount from task budget |
-| `currency` | `"USD"` | Currency code |
+| `currency` | `"PROOF"` | Currency code (PROOF tokens) |
 | `fee` | `0` | Transaction fee (if any) |
 | `net_amount` | `task.budget_cost` | Net amount after fees |
 | `related_entity_type` | `"task"` | Entity type (task) |
