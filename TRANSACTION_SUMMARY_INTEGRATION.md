@@ -255,11 +255,19 @@ Summaries are refreshed when:
    }, [people]);
    ```
 
-2. **After task completion** (automatic via API)
-   - Transaction created
-   - Summary updates on next API call
+2. **After task completion** (automatic)
+   ```javascript
+   await onFireAPI.createTransaction(transactionData);
+   await loadTransactionSummaries();  // Refresh charts
+   ```
 
-3. **Manual refresh** (future enhancement)
+3. **After task uncomplete** (automatic)
+   ```javascript
+   await onFireAPI.createReversalTransaction(reversalData);
+   await loadTransactionSummaries();  // Refresh charts
+   ```
+
+4. **Manual refresh** (future enhancement)
    - Add refresh button
    - Reload summaries on demand
 
