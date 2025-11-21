@@ -141,25 +141,24 @@ const TaskManagementHUD = ({ conversationId }) => {
       
       // 2. Create transaction for the budget_cost
       const transactionData = {
-        transaction_type: 'buy',
-        status: 'completed',
         from_user_id: task.created_by_user_id,
         to_user_id: personId,
         amount: amount,
-        currency: 'USD',
         fee: 0,
         net_amount: amount,
         related_entity_type: 'task',
         related_entity_id: taskId,
         description: `Payment for completing task: ${task.title}`,
         notes: `Task completed by ${person.name}`,
-        metadata: JSON.stringify({
+        metadata: {
           task_id: taskId,
           task_title: task.title,
           completed_by: personId,
           conversation_id: conversationId
-        })
+        }
       };
+      
+      console.log('Creating transaction:', transactionData);
       
       await onFireAPI.createTransaction(transactionData);
       console.log('Transaction created successfully');
