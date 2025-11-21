@@ -423,8 +423,12 @@ if (userData.avatar) {
 
 ### Expected Avatar URL Format
 ```
-https://cdn.onfire.so/avatars/{user-id}/{filename}.jpg
-https://storage.onfire.so/users/{user-id}/avatar.png
+https://onfire-messenger-dev-space.nyc3.digitaloceanspaces.com/mediafiles/users/avatars/user_avatar_{timestamp}.jpg
+```
+
+Example:
+```
+https://onfire-messenger-dev-space.nyc3.digitaloceanspaces.com/mediafiles/users/avatars/user_avatar_1762337372219.jpg
 ```
 
 ## Browser Console Testing
