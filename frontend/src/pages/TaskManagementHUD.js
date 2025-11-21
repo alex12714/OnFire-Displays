@@ -119,28 +119,65 @@ const TaskManagementHUD = ({ conversationId }) => {
     const task = tasks.find(t => t.id === taskId);
     const person = people.find(p => p.id === personId);
     
-    if (task && person) {
-      setModalData({
-        personName: person.name,
-        taskTitle: task.title,
-        coins: Math.ceil((task.estimated_time_minutes || 30) / 10) // Estimate coins based on time
-      });
-      setShowModal(true);
+    if (!task || !person) return;
+    
+    // Prevent duplicate calls
+    if (showModal) return;
+    
+    const coins = Math.ceil((task.estimated_time_minutes || 30) / 10);
+    const amount = task.budget_cost || coins;
+    
+    setModalData({
+      personName: person.name,
+      taskTitle: task.title,
+      coins: coins
+    });
+    setShowModal(true);
+    
+    try {
+      // 1. Mark task as completed
+      await onFireAPI.completeTask(taskId, personId);
+      console.log('Task marked as completed');
       
-      try {
-        await onFireAPI.completeTask(taskId, personId);
-        
-        setTimeout(() => {
-          loadTasks(); // Reload tasks after completion
-        }, 500);
-      } catch (error) {
-        console.error('Error completing task:', error);
-      }
-
+      // 2. Create transaction for the budget_cost
+      const transactionData = {
+        transaction_type: 'buy',
+        status: 'completed',
+        from_user_id: task.created_by_user_id,
+        to_user_id: personId,
+        amount: amount,
+        currency: 'USD',
+        fee: 0,
+        net_amount: amount,
+        related_entity_type: 'task',
+        related_entity_id: taskId,
+        description: `Payment for completing task: ${task.title}`,
+        notes: `Task completed by ${person.name}`,
+        metadata: JSON.stringify({
+          task_id: taskId,
+          task_title: task.title,
+          completed_by: personId,
+          conversation_id: conversationId
+        })
+      };
+      
+      await onFireAPI.createTransaction(transactionData);
+      console.log('Transaction created successfully');
+      
+      // 3. Reload tasks after a delay (after modal shows)
       setTimeout(() => {
-        setShowModal(false);
-      }, 3000);
+        loadTasks();
+      }, 3500);
+      
+    } catch (error) {
+      console.error('Error completing task or creating transaction:', error);
+      // Still close modal on error
     }
+
+    // Close modal after 3 seconds
+    setTimeout(() => {
+      setShowModal(false);
+    }, 3000);
   };
 
   const uncompleteTask = async (taskId) => {
