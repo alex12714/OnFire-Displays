@@ -142,7 +142,7 @@ class OnFireAPI {
   // Tasks
   async getTasks(conversationId) {
     try {
-      let url = `${API_BASE_URL}/tasks?select=id,title,description,status,priority,cover_image_url,attachment_urls,assignee_user_ids,completed_by_user_id,created_at,updated_at,chat_id,estimated_time_minutes,created_by_user_id`;
+      let url = `${API_BASE_URL}/tasks?select=id,title,description,status,priority,cover_image_url,attachment_urls,assignee_user_ids,completed_by_user_id,created_at,updated_at,chat_id,estimated_time_minutes,created_by_user_id,budget_cost`;
       
       if (conversationId) {
         url += `&chat_id=eq.${conversationId}`;
