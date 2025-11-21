@@ -224,29 +224,67 @@ const TaskManagementHUD = ({ conversationId }) => {
     try {
       console.log('Uncompleting task:', taskId);
       
+      // Get task data before uncompleting
+      const completedTask = completedTasks.find(t => t.id === taskId);
+      
+      if (!completedTask) {
+        console.error('Task not found in completed list');
+        return;
+      }
+      
+      // Store data for reversal transaction
+      const coins = Math.ceil((completedTask.estimated_time_minutes || 30) / 10);
+      const amount = completedTask.budget_cost || coins;
+      const person = people.find(p => p.id === completedTask.completed_by_user_id);
+      
       // 1. Update API - change status to not_started
       await onFireAPI.uncompleteTask(taskId);
       console.log('Task status changed to not_started');
       
       // 2. Immediately update local state
-      const completedTask = completedTasks.find(t => t.id === taskId);
+      const revertedTask = {
+        ...completedTask,
+        status: 'not_started',
+        completed_by_user_id: null,
+        progress_percentage: 0,
+        updated_at: new Date().toISOString()
+      };
       
-      if (completedTask) {
-        const revertedTask = {
-          ...completedTask,
-          status: 'not_started',
-          completed_by_user_id: null,
-          progress_percentage: 0,
-          updated_at: new Date().toISOString()
-        };
-        
-        // Remove from completed tasks
-        setCompletedTasks(prevCompleted => prevCompleted.filter(t => t.id !== taskId));
-        
-        // Add back to active tasks
-        setTasks(prevTasks => [revertedTask, ...prevTasks]);
-        
-        console.log('UI updated - task moved back to active section');
+      // Remove from completed tasks
+      setCompletedTasks(prevCompleted => prevCompleted.filter(t => t.id !== taskId));
+      
+      // Add back to active tasks
+      setTasks(prevTasks => [revertedTask, ...prevTasks]);
+      
+      console.log('UI updated - task moved back to active section');
+      
+      // 3. Create reversal transaction with type "unsend"
+      const reversalData = {
+        from_user_id: completedTask.created_by_user_id,
+        to_user_id: completedTask.completed_by_user_id,
+        amount: amount,
+        fee: 0,
+        net_amount: amount,
+        related_entity_type: 'task',
+        description: `Reversal for uncompleted task: ${completedTask.title}`,
+        notes: `Task uncompleted by ${person?.name || 'user'}`,
+        metadata: {
+          task_id: taskId,
+          task_title: completedTask.title,
+          uncompleted_by: completedTask.completed_by_user_id,
+          conversation_id: conversationId,
+          reversal: true
+        }
+      };
+      
+      console.log('Creating reversal transaction:', reversalData);
+      
+      try {
+        const result = await onFireAPI.createReversalTransaction(reversalData);
+        console.log('✅ Reversal transaction created:', result);
+      } catch (txError) {
+        console.error('❌ Reversal transaction failed:', txError.message);
+        console.error('Continuing with task uncomplete despite transaction error');
       }
       
     } catch (error) {
