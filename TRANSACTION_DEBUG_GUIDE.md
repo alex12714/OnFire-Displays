@@ -229,7 +229,7 @@ curl -X GET "https://api2.onfire.so/transactions?order=created_at.desc&limit=5" 
   -H "Authorization: Bearer $TOKEN"
 
 # Get transactions by type and currency
-curl -X GET "https://api2.onfire.so/transactions?transaction_type=eq.send&currency=eq.PROOF" \
+curl -X GET "https://api2.onfire.so/transactions?transaction_type=eq.send&currency=eq.PRF" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
