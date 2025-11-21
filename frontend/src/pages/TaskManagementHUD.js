@@ -83,15 +83,18 @@ const TaskManagementHUD = ({ conversationId }) => {
         let avatar = null;
         
         if (profile) {
-          // Use display_name from user_profiles
-          name = profile.display_name || name;
-          initial = (profile.display_name || 'U')[0].toUpperCase();
+          // Extract first name only from display_name
+          const displayName = profile.display_name || name;
+          name = displayName.split(' ')[0]; // Get only first word (first name)
+          initial = name[0].toUpperCase();
           // Use profile_photo_url from user_profiles
           avatar = profile.profile_photo_url || null;
         } else if (currentUserData) {
           // Fallback to current user data from login
           name = currentUserData.first_name || currentUserData.username || name;
-          initial = (currentUserData.first_name || currentUserData.username || 'U')[0].toUpperCase();
+          // Extract first name if username contains spaces
+          name = name.split(' ')[0];
+          initial = name[0].toUpperCase();
         }
         
         return {
