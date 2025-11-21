@@ -448,21 +448,21 @@ const TaskManagementHUD = ({ conversationId }) => {
                   </div>
                   <div className="vertical-bars-container">
                     <div className="vertical-bar-wrapper">
-                      <div className="bar-amount">${progress.total}</div>
+                      <div className="bar-amount">${progress.daily || 0}</div>
                       <div className="vertical-bar">
                         <div className="vertical-bar-fill" style={{ height: `${progress.dayHeight}%` }}></div>
                       </div>
                       <div className="bar-label">D</div>
                     </div>
                     <div className="vertical-bar-wrapper">
-                      <div className="bar-amount">${progress.total}</div>
+                      <div className="bar-amount">${progress.weekly || 0}</div>
                       <div className="vertical-bar">
                         <div className="vertical-bar-fill" style={{ height: `${progress.weekHeight}%` }}></div>
                       </div>
                       <div className="bar-label">W</div>
                     </div>
                     <div className="vertical-bar-wrapper">
-                      <div className="bar-amount">${progress.total}</div>
+                      <div className="bar-amount">${progress.monthly || 0}</div>
                       <div className="vertical-bar">
                         <div className="vertical-bar-fill" style={{ height: `${progress.monthHeight}%` }}></div>
                       </div>
