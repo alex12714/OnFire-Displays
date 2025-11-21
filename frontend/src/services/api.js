@@ -195,6 +195,7 @@ class OnFireAPI {
   // Transactions
   async createTransaction(transactionData) {
     try {
+      // Build payload matching the working curl format
       const payload = {
         transaction_type: 'send',
         status: 'completed',
@@ -205,17 +206,21 @@ class OnFireAPI {
         fee: transactionData.fee || 0,
         net_amount: transactionData.net_amount || transactionData.amount,
         related_entity_type: transactionData.related_entity_type || 'task',
-        related_entity_id: transactionData.related_entity_id,
         description: transactionData.description || '',
         notes: transactionData.notes || ''
       };
+      
+      // Only add related_entity_id if it's provided and valid
+      if (transactionData.related_entity_id) {
+        payload.related_entity_id = String(transactionData.related_entity_id);
+      }
       
       // Add metadata only if it's not empty
       if (transactionData.metadata && Object.keys(transactionData.metadata).length > 0) {
         payload.metadata = transactionData.metadata;
       }
       
-      console.log('Creating transaction with payload:', payload);
+      console.log('Creating transaction with payload:', JSON.stringify(payload, null, 2));
       
       const response = await axios.post(
         `${API_BASE_URL}/transactions`,
@@ -230,10 +235,10 @@ class OnFireAPI {
       console.log('Transaction created successfully:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error creating transaction:', error);
+      console.error('Error creating transaction:', error.message);
       console.error('Error response:', error.response?.data);
       console.error('Error status:', error.response?.status);
-      console.error('Error headers:', error.response?.headers);
+      console.error('Request payload was:', JSON.stringify(payload, null, 2));
       throw error;
     }
   }
