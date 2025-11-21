@@ -97,16 +97,10 @@ The database likely uses `not_started` as the initial status for tasks that have
    ```
 
 2. **User clicks thumbnail**
-   - Confirmation dialog appears:
-   ```
-   Remove "Clean Kitchen" from Alex's completed tasks?
-   [Cancel] [OK]
-   ```
-
-3. **User confirms**
    - Task immediately disappears from completed section
    - Task reappears in available tasks section
    - Progress bars update (coins decrease)
+   - No confirmation dialog (instant action)
 
 ### Visual Feedback
 
