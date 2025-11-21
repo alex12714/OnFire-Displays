@@ -61,31 +61,37 @@ const TaskManagementHUD = ({ conversationId }) => {
         }
       });
       
-      // Fetch actual user data with avatars
-      console.log('Fetching user data for:', Array.from(uniqueUserIds));
-      const usersData = await onFireAPI.getUsers(Array.from(uniqueUserIds));
-      console.log('Fetched users data:', usersData);
+      // Fetch actual user profiles with avatars
+      console.log('Fetching user profiles for:', Array.from(uniqueUserIds));
+      const userProfiles = await onFireAPI.getUserProfiles(Array.from(uniqueUserIds));
+      console.log('Fetched user profiles:', userProfiles);
       
-      // Create user map for quick lookup
-      const userMap = {};
-      usersData.forEach(user => {
-        userMap[user.id] = user;
+      // Create user profile map for quick lookup (keyed by user_id)
+      const profileMap = {};
+      userProfiles.forEach(profile => {
+        profileMap[profile.user_id] = profile;
       });
       
       // Generate people list with actual user data and avatars
       const colors = ['#ff6b35', '#ff8c42', '#ff9a56', '#ffa86b', '#ffb680', '#ffc494', '#ffd2a8'];
       const peopleList = Array.from(uniqueUserIds).map((userId, index) => {
-        const user = userMap[userId] || (userId === userData?.id ? userData : null);
+        const profile = profileMap[userId];
+        const currentUserData = userId === userData?.id ? userData : null;
         
         let name = `User ${userId.substring(0, 8)}`;
         let initial = String.fromCharCode(65 + (index % 26));
         let avatar = null;
         
-        if (user) {
-          name = user.first_name || user.username || user.email?.split('@')[0] || name;
-          initial = (user.first_name || user.username || user.email || 'U')[0].toUpperCase();
-          // Check for avatar/profile picture URL
-          avatar = user.avatar || user.profile_picture_url || null;
+        if (profile) {
+          // Use display_name from user_profiles
+          name = profile.display_name || name;
+          initial = (profile.display_name || 'U')[0].toUpperCase();
+          // Use profile_photo_url from user_profiles
+          avatar = profile.profile_photo_url || null;
+        } else if (currentUserData) {
+          // Fallback to current user data from login
+          name = currentUserData.first_name || currentUserData.username || name;
+          initial = (currentUserData.first_name || currentUserData.username || 'U')[0].toUpperCase();
         }
         
         return {
