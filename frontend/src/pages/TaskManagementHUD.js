@@ -10,6 +10,7 @@ const TaskManagementHUD = ({ conversationId }) => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({ personName: '', taskTitle: '', coins: 0 });
+  const [transactionSummaries, setTransactionSummaries] = useState({});
 
   useEffect(() => {
     if (conversationId) {
