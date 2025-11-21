@@ -269,7 +269,7 @@ curl -X PATCH "https://api2.onfire.so/tasks?id=eq.c5b66750-64db-4486-ac3a-96172a
 ✅ **Implemented:**
 - PATCH request to update task status to `not_started`
 - Immediate UI update (optimistic)
-- Confirmation dialog before uncomplete
+- No confirmation dialog (instant action)
 - Console logging for debugging
 - Error recovery with full reload
 
