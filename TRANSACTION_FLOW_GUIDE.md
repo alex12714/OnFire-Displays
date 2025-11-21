@@ -83,12 +83,12 @@ async createTransaction(transactionData) {
   const response = await axios.post(
     `${API_BASE_URL}/transactions`,
     {
-      transaction_type: transactionData.transaction_type || 'buy',
-      status: transactionData.status || 'completed',
+      transaction_type: 'send',
+      status: 'completed',
       from_user_id: transactionData.from_user_id,
       to_user_id: transactionData.to_user_id,
       amount: transactionData.amount,
-      currency: transactionData.currency || 'USD',
+      currency: 'PROOF',
       fee: transactionData.fee || 0,
       net_amount: transactionData.net_amount || transactionData.amount,
       related_entity_type: transactionData.related_entity_type || 'task',
