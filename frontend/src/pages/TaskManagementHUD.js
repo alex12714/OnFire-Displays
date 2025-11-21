@@ -285,13 +285,13 @@ const TaskManagementHUD = ({ conversationId }) => {
       
       console.log('UI updated - task moved back to active section');
       
-      // 3. Create reversal transaction with type "unsend"
+      // 3. Create reversal transaction with type "unsend" and negative amount
       const reversalData = {
         from_user_id: completedTask.created_by_user_id,
         to_user_id: completedTask.completed_by_user_id,
-        amount: amount,
+        amount: -amount,  // Negative amount for reversal
         fee: 0,
-        net_amount: amount,
+        net_amount: -amount,  // Negative net amount
         related_entity_type: 'task',
         description: `Reversal for uncompleted task: ${completedTask.title}`,
         notes: `Task uncompleted by ${person?.name || 'user'}`,
