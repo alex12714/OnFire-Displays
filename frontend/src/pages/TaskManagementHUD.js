@@ -257,10 +257,8 @@ const TaskManagementHUD = ({ conversationId }) => {
   };
 
   const handleTaskThumbnailClick = (task) => {
-    const person = people.find(p => p.id === task.completed_by_user_id);
-    if (window.confirm(`Remove "${task.title}" from ${person?.name || 'completed'} tasks?`)) {
-      uncompleteTask(task.id);
-    }
+    // Directly uncomplete without confirmation
+    uncompleteTask(task.id);
   };
 
   const getPersonProgress = (personId) => {
