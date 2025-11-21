@@ -10,7 +10,7 @@ When a task is completed, the following transaction is created:
 {
   transaction_type: 'send',      // MUST be 'send' (not 'buy')
   status: 'completed',            // Transaction is immediately completed
-  currency: 'PROOF',              // MUST be 'PROOF' (not 'USD')
+  currency: 'PRF',              // MUST be 'PRF' (3-letter code)
   from_user_id: task.created_by_user_id,  // Task creator pays
   to_user_id: personId,           // Task completer receives
   amount: task.budget_cost,       // Amount from task budget
