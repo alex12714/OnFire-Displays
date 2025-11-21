@@ -12,35 +12,57 @@ Tasks → Extract User IDs → Fetch User Profiles → Display Avatars or Initia
 
 ### API Endpoints Used
 
-#### 1. Get Users Data
+#### 1. Get User Profiles Data
 ```javascript
-GET https://api2.onfire.so/users?or=(id.eq.{userId1},id.eq.{userId2},...)
+GET https://api2.onfire.so/user_profiles?or=(user_id.eq.{userId1},user_id.eq.{userId2},...)
 ```
 
 **Query Parameters:**
-- `or=(id.eq.{userId1},id.eq.{userId2},...) ` - Fetch multiple users
-- `select=id,email,username,first_name,last_name,avatar,profile_picture_url` - Fields to return
+- `or=(user_id.eq.{userId1},user_id.eq.{userId2},...) ` - Fetch multiple user profiles
+- `select=user_id,display_name,profile_photo_url` - Fields to return
 
 **Response:**
 ```json
 [
   {
-    "id": "user-uuid-here",
-    "email": "user@example.com",
-    "username": "johndoe",
-    "first_name": "John",
-    "last_name": "Doe",
-    "avatar": "https://cdn.example.com/avatars/user-123.jpg",
-    "profile_picture_url": "https://cdn.example.com/profiles/user-123.jpg"
+    "user_id": "b3dc6d78-37ff-4c83-b163-51c0d30af1d5",
+    "display_name": "Alex P.",
+    "profile_photo_url": "https://onfire-messenger-dev-space.nyc3.digitaloceanspaces.com/mediafiles/users/avatars/user_avatar_1762337372219.jpg"
   }
 ]
 ```
 
-#### 2. Avatar Field Priority
-The system checks for avatar URLs in this order:
-1. `user.avatar` - Primary avatar field
-2. `user.profile_picture_url` - Alternative field
-3. Fallback to colored initial circle
+**Full Profile Response (when selecting all fields):**
+```json
+{
+  "id": "9a4873cd-8edd-461f-84d0-ce25bd21c9fd",
+  "user_id": "b3dc6d78-37ff-4c83-b163-51c0d30af1d5",
+  "about": "Passionate software developer and tech enthusiast with 8+ years of experience.",
+  "date_of_birth": "1992-03-15",
+  "profile_photo_url": "https://onfire-messenger-dev-space.nyc3.digitaloceanspaces.com/mediafiles/users/avatars/user_avatar_1762337372219.jpg",
+  "wallet_address": "2423",
+  "profile_rating": 4.80,
+  "profile_status": "personal",
+  "created_at": "2025-10-16T12:49:48.843079+00:00",
+  "updated_at": "2025-11-05T10:09:44.182779+00:00",
+  "display_name": "Alex P.",
+  "pronouns": "he/him",
+  "occupation": "Senior Software Engineer",
+  "skills": "Python, JavaScript, React, Node.js, PostgreSQL, Docker, AWS",
+  "interests": "AI/ML, Blockchain, Open Source, Gaming, Travel",
+  "social_links": "linkedin.com/in/alexpodbrezsky,github.com/alexpodbrezsky",
+  "cover_images": [
+    "https://example.com/cover-a.jpg",
+    "https://example.com/cover-b.jpg",
+    "https://example.com/cover-c.jpg"
+  ]
+}
+```
+
+#### 2. Avatar Field Used
+The system uses **`profile_photo_url`** from the `user_profiles` table:
+1. `profile.profile_photo_url` - Avatar image URL
+2. Fallback to colored initial circle if null
 
 ## Implementation Details
 
