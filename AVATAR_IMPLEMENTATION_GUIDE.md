@@ -69,22 +69,22 @@ The system uses **`profile_photo_url`** from the `user_profiles` table:
 ### 1. API Service (api.js)
 
 ```javascript
-// Fetch multiple users
-async getUsers(userIds = []) {
+// Fetch multiple user profiles
+async getUserProfiles(userIds = []) {
   if (!userIds || userIds.length === 0) return [];
   
-  const idsFilter = userIds.map(id => `id.eq.${id}`).join(',');
+  const idsFilter = userIds.map(id => `user_id.eq.${id}`).join(',');
   const response = await axios.get(
-    `${API_BASE_URL}/users?or=(${idsFilter})&select=id,email,username,first_name,last_name,avatar,profile_picture_url`,
+    `${API_BASE_URL}/user_profiles?or=(${idsFilter})&select=user_id,display_name,profile_photo_url`,
     { headers: this.getAuthHeaders() }
   );
   return response.data || [];
 }
 
-// Fetch single user
-async getUser(userId) {
+// Fetch single user profile
+async getUserProfile(userId) {
   const response = await axios.get(
-    `${API_BASE_URL}/users?id=eq.${userId}&select=id,email,username,first_name,last_name,avatar,profile_picture_url`,
+    `${API_BASE_URL}/user_profiles?user_id=eq.${userId}&select=user_id,display_name,profile_photo_url`,
     { headers: this.getAuthHeaders() }
   );
   return response.data?.[0] || null;
