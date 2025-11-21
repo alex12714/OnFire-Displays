@@ -229,12 +229,12 @@ curl -X GET "https://api2.onfire.so/transactions?related_entity_id=eq.{taskId}" 
 [
   {
     "id": "transaction-uuid-here",
-    "transaction_type": "buy",
+    "transaction_type": "send",
     "status": "completed",
     "from_user_id": "creator-uuid",
     "to_user_id": "completer-uuid",
     "amount": 50,
-    "currency": "USD",
+    "currency": "PROOF",
     "related_entity_type": "task",
     "related_entity_id": "task-uuid",
     "description": "Payment for completing task: Clean Kitchen",
