@@ -110,23 +110,23 @@ const loadTasks = async () => {
   });
   
   // 3. Fetch user profiles with avatars
-  const usersData = await onFireAPI.getUsers(Array.from(uniqueUserIds));
+  const userProfiles = await onFireAPI.getUserProfiles(Array.from(uniqueUserIds));
   
-  // 4. Create user map
-  const userMap = {};
-  usersData.forEach(user => {
-    userMap[user.id] = user;
+  // 4. Create profile map (keyed by user_id)
+  const profileMap = {};
+  userProfiles.forEach(profile => {
+    profileMap[profile.user_id] = profile;
   });
   
   // 5. Generate people list with avatars
   const peopleList = Array.from(uniqueUserIds).map((userId, index) => {
-    const user = userMap[userId];
+    const profile = profileMap[userId];
     
     return {
       id: userId,
-      name: user?.first_name || user?.username || `User ${userId.substring(0, 8)}`,
-      initial: (user?.first_name || user?.username || 'U')[0].toUpperCase(),
-      avatar: user?.avatar || user?.profile_picture_url || null,
+      name: profile?.display_name || `User ${userId.substring(0, 8)}`,
+      initial: (profile?.display_name || 'U')[0].toUpperCase(),
+      avatar: profile?.profile_photo_url || null,
       color: colors[index % colors.length]
     };
   });
