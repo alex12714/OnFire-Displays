@@ -230,6 +230,11 @@ const TaskManagementHUD = ({ conversationId }) => {
       try {
         const result = await onFireAPI.createTransaction(transactionData);
         console.log('✅ Transaction created successfully:', result);
+        
+        // Reload transaction summaries to update progress bars
+        console.log('Reloading transaction summaries after task completion...');
+        await loadTransactionSummaries();
+        console.log('Transaction summaries refreshed');
       } catch (txError) {
         console.error('❌ Transaction creation failed:', txError.message);
         console.error('Full error:', txError);
