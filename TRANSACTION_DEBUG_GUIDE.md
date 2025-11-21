@@ -151,7 +151,7 @@ curl -X POST "https://api2.onfire.so/transactions" \
     "from_user_id": "creator-user-uuid",
     "to_user_id": "completer-user-uuid",
     "amount": 50,
-    "currency": "PROOF",
+    "currency": "PRF",
     "fee": 0,
     "net_amount": 50,
     "related_entity_type": "task",
