@@ -183,12 +183,12 @@ After implementing changes:
 
 ✅ **Correct Configuration:**
 - `transaction_type`: `"send"`
-- `currency`: `"PROOF"`
+- `currency`: `"PRF"` (3-letter code)
 - `status`: `"completed"`
 
 ❌ **Previous (Incorrect) Configuration:**
 - `transaction_type`: `"buy"`
-- `currency`: `"USD"`
+- `currency`: `"USD"` or `"PROOF"` (too long)
 
 🔧 **Changes Made:**
 1. Updated API service to use fixed values
