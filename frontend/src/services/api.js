@@ -94,10 +94,55 @@ class OnFireAPI {
     }
   }
 
+  // Users
+  async getUsers(userIds = []) {
+    try {
+      if (!userIds || userIds.length === 0) return [];
+      
+      // Build query to fetch multiple users
+      const idsFilter = userIds.map(id => `id.eq.${id}`).join(',');
+      const response = await axios.get(
+        `${API_BASE_URL}/users?or=(${idsFilter})&select=id,email,username,first_name,last_name,avatar,profile_picture_url`,
+        { headers: this.getAuthHeaders() }
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return [];
+    }
+  }
+
+  async getUser(userId) {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/users?id=eq.${userId}&select=id,email,username,first_name,last_name,avatar,profile_picture_url`,
+        { headers: this.getAuthHeaders() }
+      );
+      return response.data?.[0] || null;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      return null;
+    }
+  }
+
+  // Conversation Participants
+  async getConversationParticipants(conversationId) {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/conversation_participants?conversation_id=eq.${conversationId}&select=user_id,role,nickname`,
+        { headers: this.getAuthHeaders() }
+      );
+      return response.data || [];
+    } catch (error) {
+      console.error('Error fetching participants:', error);
+      return [];
+    }
+  }
+
   // Tasks
   async getTasks(conversationId) {
     try {
-      let url = `${API_BASE_URL}/tasks?select=id,title,description,status,priority,cover_image_url,attachment_urls,assignee_user_ids,completed_by_user_id,created_at,updated_at,chat_id,estimated_time_minutes`;
+      let url = `${API_BASE_URL}/tasks?select=id,title,description,status,priority,cover_image_url,attachment_urls,assignee_user_ids,completed_by_user_id,created_at,updated_at,chat_id,estimated_time_minutes,created_by_user_id`;
       
       if (conversationId) {
         url += `&chat_id=eq.${conversationId}`;
