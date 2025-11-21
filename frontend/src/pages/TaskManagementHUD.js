@@ -234,8 +234,12 @@ const TaskManagementHUD = ({ conversationId }) => {
                 <div key={person.id} className="person-progress-card">
                   <div className="person-avatar-section">
                     <div className="person-progress-name">{person.name}</div>
-                    <div className="avatar" style={{ background: person.color }}>
-                      {person.initial}
+                    <div className="avatar" style={{ background: person.avatar ? 'transparent' : person.color }}>
+                      {person.avatar ? (
+                        <img src={person.avatar} alt={person.name} className="avatar-image" />
+                      ) : (
+                        person.initial
+                      )}
                     </div>
                   </div>
                   <div className="vertical-bars-container">
