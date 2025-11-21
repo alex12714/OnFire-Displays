@@ -283,7 +283,7 @@ curl -X PATCH "https://api2.onfire.so/tasks?id=eq.c5b66750-64db-4486-ac3a-96172a
 - Status changes to `not_started` (not `pending`)
 - `completed_by_user_id` set to `null`
 - Task moves from completed to active section
-- Transactions remain unchanged (not reversed)
+- Creates reversal transaction with type `unsend`
 - Instant visual feedback
 
 🔄 **Reversible:**
