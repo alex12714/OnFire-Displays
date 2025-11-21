@@ -130,7 +130,7 @@ const completeTask = async (taskId, personId) => {
     // 1. Mark task as completed
     await onFireAPI.completeTask(taskId, personId);
     
-    // 2. Create transaction
+    // 2. Create transaction (type: send, currency: PROOF)
     await onFireAPI.createTransaction({
       from_user_id: task.created_by_user_id,
       to_user_id: personId,
@@ -138,12 +138,12 @@ const completeTask = async (taskId, personId) => {
       related_entity_id: taskId,
       description: `Payment for completing task: ${task.title}`,
       notes: `Task completed by ${person.name}`,
-      metadata: JSON.stringify({
+      metadata: {
         task_id: taskId,
         task_title: task.title,
         completed_by: personId,
         conversation_id: conversationId
-      })
+      }
     });
     
     // 3. Reload tasks
