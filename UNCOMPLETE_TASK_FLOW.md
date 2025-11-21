@@ -193,16 +193,16 @@ UI updated - task moved back to active section
 
 ### Reversal Transaction
 
-When a task is uncompleted, a new transaction is created with `transaction_type: 'unsend'`:
+When a task is uncompleted, a new transaction is created with `transaction_type: 'unsend'` and **negative amount**:
 
 ```javascript
 const reversalData = {
   from_user_id: completedTask.created_by_user_id,  // Same as original
   to_user_id: completedTask.completed_by_user_id,  // Same as original
-  amount: amount,                                   // Same amount
+  amount: -amount,                                  // NEGATIVE amount (e.g., -3)
   currency: 'PRF',
   fee: 0,
-  net_amount: amount,
+  net_amount: -amount,                              // NEGATIVE net amount
   related_entity_type: 'task',
   description: `Reversal for uncompleted task: ${task.title}`,
   notes: `Task uncompleted by ${person.name}`,
@@ -220,12 +220,12 @@ await createReversalTransaction(reversalData);
 
 ### Transaction Types
 
-| Type | When Created | Direction | Purpose |
-|------|-------------|-----------|---------|
-| `send` | Task completed | creator → completer | Payment for work |
-| `unsend` | Task uncompleted | creator → completer | Reversal/refund |
+| Type | When Created | Amount | Direction | Purpose |
+|------|-------------|--------|-----------|---------|
+| `send` | Task completed | Positive (+50) | creator → completer | Payment for work |
+| `unsend` | Task uncompleted | Negative (-50) | creator → completer | Reversal/refund |
 
-**Note:** Both transactions have the same `from_user_id` and `to_user_id`. The `unsend` type indicates it's a reversal.
+**Key Difference:** The negative amount in `unsend` transactions automatically reverses the balance when calculating totals.
 
 ## Testing
 
