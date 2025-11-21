@@ -191,6 +191,39 @@ class OnFireAPI {
       updated_at: new Date().toISOString()
     });
   }
+
+  // Transactions
+  async createTransaction(transactionData) {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/transactions`,
+        {
+          transaction_type: transactionData.transaction_type || 'buy',
+          status: transactionData.status || 'completed',
+          from_user_id: transactionData.from_user_id,
+          to_user_id: transactionData.to_user_id,
+          amount: transactionData.amount,
+          currency: transactionData.currency || 'USD',
+          fee: transactionData.fee || 0,
+          net_amount: transactionData.net_amount || transactionData.amount,
+          related_entity_type: transactionData.related_entity_type || 'task',
+          related_entity_id: transactionData.related_entity_id,
+          description: transactionData.description || '',
+          metadata: transactionData.metadata || {},
+          notes: transactionData.notes || '',
+          initiated_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        { headers: this.getAuthHeaders() }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      throw error;
+    }
+  }
 }
 
 export default new OnFireAPI();
