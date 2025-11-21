@@ -406,16 +406,20 @@ if (userData.avatar) {
 
 ## API Field Reference
 
-### User Object Fields
+### User Profile Object Fields
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | UUID | User identifier |
-| `email` | String | User email |
-| `username` | String | Username |
-| `first_name` | String | First name |
-| `last_name` | String | Last name |
-| `avatar` | String (URL) | Primary avatar image URL |
-| `profile_picture_url` | String (URL) | Alternative avatar URL |
+| `id` | UUID | Profile record identifier |
+| `user_id` | UUID | User identifier (FK) |
+| `display_name` | String | User's display name |
+| `profile_photo_url` | String (URL) | Avatar image URL |
+| `about` | String | User bio/description |
+| `date_of_birth` | Date | Birth date |
+| `occupation` | String | Job title |
+| `skills` | String | Comma-separated skills |
+| `interests` | String | User interests |
+| `pronouns` | String | Preferred pronouns |
+| `cover_images` | Array | Cover photo URLs |
 
 ### Expected Avatar URL Format
 ```
