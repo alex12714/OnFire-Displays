@@ -18,6 +18,32 @@ const TaskManagementHUD = ({ conversationId }) => {
     }
   }, [conversationId]);
 
+  useEffect(() => {
+    if (people.length > 0) {
+      loadTransactionSummaries();
+    }
+  }, [people]);
+
+  const loadTransactionSummaries = async () => {
+    console.log('Loading transaction summaries for people:', people);
+    const summaries = {};
+    
+    for (const person of people) {
+      try {
+        const summary = await onFireAPI.getTransactionSummary(person.id);
+        if (summary) {
+          summaries[person.id] = summary;
+          console.log(`Transaction summary for ${person.name}:`, summary);
+        }
+      } catch (error) {
+        console.error(`Error loading summary for ${person.name}:`, error);
+      }
+    }
+    
+    setTransactionSummaries(summaries);
+    console.log('All transaction summaries loaded:', summaries);
+  };
+
   const loadTasks = async () => {
     setLoading(true);
     try {
