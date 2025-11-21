@@ -154,6 +154,29 @@ const TaskManagementHUD = ({ conversationId }) => {
       console.log('UI updated - task moved to completed section');
       
       // 3. Create transaction for the budget_cost
+      console.log('Preparing transaction data...');
+      console.log('Task creator ID:', task.created_by_user_id);
+      console.log('Completer ID:', personId);
+      console.log('Amount:', amount);
+      console.log('Task ID:', taskId);
+      
+      // Validate required fields before creating transaction
+      if (!task.created_by_user_id) {
+        console.error('Cannot create transaction: task.created_by_user_id is missing');
+        console.log('Full task object:', task);
+        return;
+      }
+      
+      if (!personId) {
+        console.error('Cannot create transaction: personId is missing');
+        return;
+      }
+      
+      if (!amount || amount <= 0) {
+        console.error('Cannot create transaction: invalid amount', amount);
+        return;
+      }
+      
       const transactionData = {
         from_user_id: task.created_by_user_id,
         to_user_id: personId,
@@ -172,10 +195,15 @@ const TaskManagementHUD = ({ conversationId }) => {
         }
       };
       
-      console.log('Creating transaction:', transactionData);
+      console.log('Transaction data prepared:', JSON.stringify(transactionData, null, 2));
       
-      await onFireAPI.createTransaction(transactionData);
-      console.log('Transaction created successfully');
+      try {
+        const result = await onFireAPI.createTransaction(transactionData);
+        console.log('✅ Transaction created successfully:', result);
+      } catch (txError) {
+        console.error('❌ Transaction creation failed:', txError.message);
+        console.error('Full error:', txError);
+      }
       
     } catch (error) {
       console.error('Error completing task or creating transaction:', error);
