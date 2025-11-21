@@ -240,6 +240,23 @@ class OnFireAPI {
     }
   }
 
+  // Get transaction summary for a user
+  async getTransactionSummary(userId) {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/rpc/transactions_summary`,
+        {
+          p_user_uuid: userId
+        },
+        { headers: this.getAuthHeaders() }
+      );
+      return response.data?.[0] || null;
+    } catch (error) {
+      console.error('Error fetching transaction summary:', error);
+      return null;
+    }
+  }
+
   // Reversal Transaction (for uncomplete)
   async createReversalTransaction(transactionData) {
     // Same as createTransaction but with transaction_type: 'unsend'
