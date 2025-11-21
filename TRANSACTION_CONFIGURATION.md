@@ -47,7 +47,7 @@ async createTransaction(transactionData) {
     {
       transaction_type: 'send',           // ← Fixed value
       status: 'completed',                 // ← Fixed value
-      currency: 'PROOF',                   // ← Fixed value
+      currency: 'PRF',                     // ← Fixed value (3-letter code)
       from_user_id: transactionData.from_user_id,
       to_user_id: transactionData.to_user_id,
       amount: transactionData.amount,
