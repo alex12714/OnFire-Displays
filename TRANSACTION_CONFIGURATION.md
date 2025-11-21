@@ -27,9 +27,9 @@ When a task is completed, the following transaction is created:
 - **Not**: `"buy"` (which would be for purchasing something)
 
 ### 2. Currency
-- **Value**: `"PROOF"`
-- **Why**: This is the internal currency/token system
-- **Not**: `"USD"` or other fiat currencies
+- **Value**: `"PRF"`
+- **Why**: 3-letter currency code for PROOF tokens
+- **Not**: `"PROOF"` (too long), `"USD"` or other fiat currencies
 
 ### 3. Status
 - **Value**: `"completed"`
