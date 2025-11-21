@@ -327,13 +327,44 @@ const TaskManagementHUD = ({ conversationId }) => {
   };
 
   const getPersonProgress = (personId) => {
-    const personCompletedTasks = completedTasks.filter(t => t.completed_by_user_id === personId);
-    const totalCoins = personCompletedTasks.reduce((sum, t) => {
+    const summary = transactionSummaries[personId];
+    
+    if (summary) {
+      // Use API data
+      const today = new Date().toISOString().split('T')[0];
+      const dailyAmount = Math.abs(summary.daily_summary?.[today] || 0);
+      
+      // Get most recent week amount
+      const weekKeys = Object.keys(summary.weekly_summary || {});
+      const latestWeek = weekKeys.length > 0 ? weekKeys[weekKeys.length - 1] : null;
+      const weeklyAmount = latestWeek ? Math.abs(summary.weekly_summary[latestWeek]) : 0;
+      
+      // Get current month amount
+      const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
+      const monthlyAmount = Math.abs(summary.monthly_summary?.[currentMonth] || 0);
+      
+      return {
+        total: Math.abs(summary.total_amount || 0),
+        daily: dailyAmount,
+        weekly: weeklyAmount,
+        monthly: monthlyAmount,
+        dayHeight: Math.min((dailyAmount / 10) * 100, 100),
+        weekHeight: Math.min((weeklyAmount / 50) * 100, 100),
+        monthHeight: Math.min((monthlyAmount / 200) * 100, 100)
+      };
+    }
+    
+    // Fallback to calculated values if API data not available
+    const personTasks = completedTasks.filter(t => t.completed_by_user_id === personId);
+    const totalCoins = personTasks.reduce((sum, t) => {
       return sum + Math.ceil((t.estimated_time_minutes || 30) / 10);
     }, 0);
     
     return {
       total: totalCoins,
+      daily: totalCoins,
+      weekly: totalCoins,
+      monthly: totalCoins,
       dayHeight: Math.min((totalCoins / 10) * 100, 100),
       weekHeight: Math.min((totalCoins / 50) * 100, 100),
       monthHeight: Math.min((totalCoins / 200) * 100, 100)
