@@ -94,7 +94,7 @@ curl -X GET "https://api2.onfire.so/transactions?related_entity_id=eq.TASK_ID" \
   -H "Authorization: Bearer $TOKEN"
 
 # Check transaction type and currency
-curl -X GET "https://api2.onfire.so/transactions?transaction_type=eq.send&currency=eq.PROOF" \
+curl -X GET "https://api2.onfire.so/transactions?transaction_type=eq.send&currency=eq.PRF" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
