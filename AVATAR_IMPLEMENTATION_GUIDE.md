@@ -434,13 +434,13 @@ https://onfire-messenger-dev-space.nyc3.digitaloceanspaces.com/mediafiles/users/
 ## Browser Console Testing
 
 ```javascript
-// Test user fetch
-const testUsers = await onFireAPI.getUsers(['user-id-1', 'user-id-2']);
-console.log('Users:', testUsers);
+// Test user profile fetch
+const testProfiles = await onFireAPI.getUserProfiles(['user-id-1', 'user-id-2']);
+console.log('User Profiles:', testProfiles);
 
-// Test single user
-const testUser = await onFireAPI.getUser('user-id-here');
-console.log('User avatar:', testUser.avatar);
+// Test single user profile
+const testProfile = await onFireAPI.getUserProfile('user-id-here');
+console.log('User avatar:', testProfile.profile_photo_url);
 
 // Check if avatar loads
 const img = new Image();
