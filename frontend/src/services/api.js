@@ -94,33 +94,33 @@ class OnFireAPI {
     }
   }
 
-  // Users
-  async getUsers(userIds = []) {
+  // User Profiles
+  async getUserProfiles(userIds = []) {
     try {
       if (!userIds || userIds.length === 0) return [];
       
-      // Build query to fetch multiple users
-      const idsFilter = userIds.map(id => `id.eq.${id}`).join(',');
+      // Build query to fetch multiple user profiles
+      const idsFilter = userIds.map(id => `user_id.eq.${id}`).join(',');
       const response = await axios.get(
-        `${API_BASE_URL}/users?or=(${idsFilter})&select=id,email,username,first_name,last_name,avatar,profile_picture_url`,
+        `${API_BASE_URL}/user_profiles?or=(${idsFilter})&select=user_id,display_name,profile_photo_url`,
         { headers: this.getAuthHeaders() }
       );
       return response.data || [];
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching user profiles:', error);
       return [];
     }
   }
 
-  async getUser(userId) {
+  async getUserProfile(userId) {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/users?id=eq.${userId}&select=id,email,username,first_name,last_name,avatar,profile_picture_url`,
+        `${API_BASE_URL}/user_profiles?user_id=eq.${userId}&select=user_id,display_name,profile_photo_url`,
         { headers: this.getAuthHeaders() }
       );
       return response.data?.[0] || null;
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error('Error fetching user profile:', error);
       return null;
     }
   }
