@@ -314,6 +314,11 @@ const TaskManagementHUD = ({ conversationId }) => {
       try {
         const result = await onFireAPI.createReversalTransaction(reversalData);
         console.log('✅ Reversal transaction created:', result);
+        
+        // Reload transaction summaries to update progress bars
+        console.log('Reloading transaction summaries after task uncomplete...');
+        await loadTransactionSummaries();
+        console.log('Transaction summaries refreshed');
       } catch (txError) {
         console.error('❌ Reversal transaction failed:', txError.message);
         console.error('Continuing with task uncomplete despite transaction error');
