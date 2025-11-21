@@ -239,6 +239,51 @@ class OnFireAPI {
       throw error;
     }
   }
+
+  // Reversal Transaction (for uncomplete)
+  async createReversalTransaction(transactionData) {
+    // Same as createTransaction but with transaction_type: 'unsend'
+    const payload = {
+      transaction_type: 'unsend',
+      status: 'completed',
+      from_user_id: transactionData.from_user_id,
+      to_user_id: transactionData.to_user_id,
+      amount: transactionData.amount,
+      currency: 'PRF',
+      fee: transactionData.fee || 0,
+      net_amount: transactionData.net_amount || transactionData.amount,
+      related_entity_type: transactionData.related_entity_type || 'task',
+      description: transactionData.description || '',
+      notes: transactionData.notes || ''
+    };
+    
+    if (transactionData.metadata && Object.keys(transactionData.metadata).length > 0) {
+      payload.metadata = transactionData.metadata;
+    }
+    
+    console.log('Creating reversal transaction with payload:', JSON.stringify(payload, null, 2));
+    
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/transactions`,
+        payload,
+        { 
+          headers: {
+            ...this.getAuthHeaders(),
+            'Prefer': 'return=representation'
+          }
+        }
+      );
+      console.log('Reversal transaction created successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating reversal transaction:', error.message);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Request payload was:', JSON.stringify(payload, null, 2));
+      throw error;
+    }
+  }
 }
 
 export default new OnFireAPI();
