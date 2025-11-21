@@ -265,10 +265,11 @@
 .task-card {
     background: linear-gradient(135deg, rgba(26, 47, 79, 0.6) 0%, rgba(10, 22, 40, 0.9) 100%);
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible;
     border: 2px solid rgba(255, 107, 53, 0.4);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     position: relative;
+    margin-top: 25px;
 }
 
 .task-card:hover {
@@ -281,6 +282,7 @@
     width: 100%;
     height: var(--card-image-height);
     object-fit: cover;
+    border-radius: 18px 18px 0 0;
 }
 
 .task-content {
@@ -290,21 +292,23 @@
 
 .task-coins {
     position: absolute;
-    top: 15px;
-    left: 15px;
-    padding: 8px 15px;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 24px;
     background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-    border-radius: 12px;
+    border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 8px;
     font-weight: 800;
-    font-size: 1.2em;
-    border: 2px solid var(--blue-dark);
-    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.6);
+    font-size: 1.3em;
+    border: 3px solid var(--blue-dark);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
     z-index: 10;
     color: var(--blue-dark);
+    white-space: nowrap;
 }
 
 .task-title {
