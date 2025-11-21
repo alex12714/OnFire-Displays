@@ -195,34 +195,45 @@ class OnFireAPI {
   // Transactions
   async createTransaction(transactionData) {
     try {
+      const payload = {
+        transaction_type: 'send',
+        status: 'completed',
+        from_user_id: transactionData.from_user_id,
+        to_user_id: transactionData.to_user_id,
+        amount: transactionData.amount,
+        currency: 'PROOF',
+        fee: transactionData.fee || 0,
+        net_amount: transactionData.net_amount || transactionData.amount,
+        related_entity_type: transactionData.related_entity_type || 'task',
+        related_entity_id: transactionData.related_entity_id,
+        description: transactionData.description || '',
+        notes: transactionData.notes || ''
+      };
+      
+      // Add metadata only if it's not empty
+      if (transactionData.metadata && Object.keys(transactionData.metadata).length > 0) {
+        payload.metadata = transactionData.metadata;
+      }
+      
+      console.log('Creating transaction with payload:', payload);
+      
       const response = await axios.post(
         `${API_BASE_URL}/transactions`,
-        {
-          transaction_type: 'send',
-          status: 'completed',
-          from_user_id: transactionData.from_user_id,
-          to_user_id: transactionData.to_user_id,
-          amount: transactionData.amount,
-          currency: 'PROOF',
-          fee: transactionData.fee || 0,
-          net_amount: transactionData.net_amount || transactionData.amount,
-          related_entity_type: transactionData.related_entity_type || 'task',
-          related_entity_id: transactionData.related_entity_id,
-          description: transactionData.description || '',
-          metadata: transactionData.metadata || {},
-          notes: transactionData.notes || '',
-          initiated_at: new Date().toISOString(),
-          completed_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        { headers: this.getAuthHeaders() }
+        payload,
+        { 
+          headers: {
+            ...this.getAuthHeaders(),
+            'Prefer': 'return=representation'
+          }
+        }
       );
-      console.log('Transaction created:', response.data);
+      console.log('Transaction created successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error creating transaction:', error);
-      console.error('Error details:', error.response?.data);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error headers:', error.response?.headers);
       throw error;
     }
   }
