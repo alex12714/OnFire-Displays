@@ -139,7 +139,21 @@ const TaskManagementHUD = ({ conversationId }) => {
       await onFireAPI.completeTask(taskId, personId);
       console.log('Task marked as completed');
       
-      // 2. Create transaction for the budget_cost
+      // 2. Immediately update local state to move task to completed section
+      const updatedTask = {
+        ...task,
+        status: 'completed',
+        completed_by_user_id: personId,
+        updated_at: new Date().toISOString()
+      };
+      
+      // Remove from active tasks and add to completed
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId));
+      setCompletedTasks(prevCompleted => [...prevCompleted, updatedTask]);
+      
+      console.log('UI updated - task moved to completed section');
+      
+      // 3. Create transaction for the budget_cost
       const transactionData = {
         from_user_id: task.created_by_user_id,
         to_user_id: personId,
@@ -163,14 +177,10 @@ const TaskManagementHUD = ({ conversationId }) => {
       await onFireAPI.createTransaction(transactionData);
       console.log('Transaction created successfully');
       
-      // 3. Reload tasks after a delay (after modal shows)
-      setTimeout(() => {
-        loadTasks();
-      }, 3500);
-      
     } catch (error) {
       console.error('Error completing task or creating transaction:', error);
-      // Still close modal on error
+      // Revert UI change on error
+      loadTasks();
     }
 
     // Close modal after 3 seconds
