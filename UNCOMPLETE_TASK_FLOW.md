@@ -189,37 +189,43 @@ UI updated - task moved back to active section
 
 ## Transaction Handling
 
-**Important:** Uncompleting a task does NOT delete the associated transaction.
+**Important:** Uncompleting a task CREATES a reversal transaction.
 
-**Reason:** 
-- Transaction is a financial record
-- Should remain for audit trail
-- Payment has been "sent"
-- Reversing would require separate refund transaction
+### Reversal Transaction
 
-If you want to reverse the transaction when uncompleting:
+When a task is uncompleted, a new transaction is created with `transaction_type: 'unsend'`:
 
 ```javascript
-// Get transaction for this task
-const transaction = await getTransactionForTask(taskId);
+const reversalData = {
+  from_user_id: completedTask.created_by_user_id,  // Same as original
+  to_user_id: completedTask.completed_by_user_id,  // Same as original
+  amount: amount,                                   // Same amount
+  currency: 'PRF',
+  fee: 0,
+  net_amount: amount,
+  related_entity_type: 'task',
+  description: `Reversal for uncompleted task: ${task.title}`,
+  notes: `Task uncompleted by ${person.name}`,
+  metadata: {
+    task_id: taskId,
+    task_title: task.title,
+    uncompleted_by: completed_by_user_id,
+    conversation_id: conversationId,
+    reversal: true
+  }
+};
 
-if (transaction) {
-  // Create reversal transaction
-  await createTransaction({
-    transaction_type: 'send',
-    from_user_id: transaction.to_user_id,    // Reverse direction
-    to_user_id: transaction.from_user_id,
-    amount: transaction.amount,
-    currency: 'PRF',
-    description: `Reversal for uncompleted task: ${task.title}`,
-    metadata: {
-      original_transaction_id: transaction.id,
-      task_id: taskId,
-      reason: 'task_uncompleted'
-    }
-  });
-}
+await createReversalTransaction(reversalData);
 ```
+
+### Transaction Types
+
+| Type | When Created | Direction | Purpose |
+|------|-------------|-----------|---------|
+| `send` | Task completed | creator → completer | Payment for work |
+| `unsend` | Task uncompleted | creator → completer | Reversal/refund |
+
+**Note:** Both transactions have the same `from_user_id` and `to_user_id`. The `unsend` type indicates it's a reversal.
 
 ## Testing
 
