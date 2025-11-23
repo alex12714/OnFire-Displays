@@ -400,7 +400,8 @@ const TaskManagementHUD = ({ conversationId }) => {
   };
 
   const getTaskCoins = (task) => {
-    return Math.ceil((task.estimated_time_minutes || 30) / 10);
+    // Use budget_cost from API, fallback to calculated value if not available
+    return task.budget_cost || Math.ceil((task.estimated_time_minutes || 30) / 10);
   };
 
   const getTimeAgo = (timestamp) => {
