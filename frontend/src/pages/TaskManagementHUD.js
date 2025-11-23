@@ -88,39 +88,36 @@ const TaskManagementHUD = ({ conversationId }) => {
         }
       });
       
-      // Fetch actual user profiles with avatars
-      console.log('Fetching user profiles for:', Array.from(uniqueUserIds));
-      const userProfiles = await onFireAPI.getUserProfiles(Array.from(uniqueUserIds));
-      console.log('Fetched user profiles:', userProfiles);
+      // Fetch conversation participants with updated fields
+      console.log('Fetching conversation participants for:', conversationId);
+      const participants = await onFireAPI.getConversationParticipants(conversationId);
+      console.log('Fetched conversation participants:', participants);
       
-      // Create user profile map for quick lookup (keyed by user_id)
-      const profileMap = {};
-      userProfiles.forEach(profile => {
-        profileMap[profile.user_id] = profile;
+      // Create participant map for quick lookup (keyed by user_id)
+      const participantMap = {};
+      participants.forEach(participant => {
+        participantMap[participant.user_id] = participant;
       });
       
-      // Generate people list with actual user data and avatars
+      // Generate people list with actual user data from conversation_participants
       const colors = ['#ff6b35', '#ff8c42', '#ff9a56', '#ffa86b', '#ffb680', '#ffc494', '#ffd2a8'];
       const peopleList = Array.from(uniqueUserIds).map((userId, index) => {
-        const profile = profileMap[userId];
+        const participant = participantMap[userId];
         const currentUserData = userId === userData?.id ? userData : null;
         
         let name = `User ${userId.substring(0, 8)}`;
         let initial = String.fromCharCode(65 + (index % 26));
         let avatar = null;
         
-        if (profile) {
-          // Extract first name only from display_name
-          const displayName = profile.display_name || name;
-          name = displayName.split(' ')[0]; // Get only first word (first name)
+        if (participant) {
+          // Use first_name directly from conversation_participants API
+          name = participant.first_name || participant.username || name;
           initial = name[0].toUpperCase();
-          // Use profile_photo_url from user_profiles
-          avatar = profile.profile_photo_url || null;
+          // Use avatar_url from conversation_participants
+          avatar = participant.avatar_url || null;
         } else if (currentUserData) {
           // Fallback to current user data from login
           name = currentUserData.first_name || currentUserData.username || name;
-          // Extract first name if username contains spaces
-          name = name.split(' ')[0];
           initial = name[0].toUpperCase();
         }
         
