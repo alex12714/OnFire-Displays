@@ -129,7 +129,7 @@ class OnFireAPI {
   async getConversationParticipants(conversationId) {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/conversation_participants?conversation_id=eq.${conversationId}&select=user_id,role,nickname,...users_with_profile(first_name,last_name,username,avatar_url:profile_photo_url)`,
+        `${API_BASE_URL}/conversation_participants_extended?conversation_id=eq.${conversationId}`,
         { headers: this.getAuthHeaders() }
       );
       return response.data || [];
