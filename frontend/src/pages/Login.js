@@ -25,6 +25,7 @@ const Login = () => {
   const pollingRef = useRef(null);
   const timerRef = useRef(null);
   const expiresAtRef = useRef(null);
+  const qrCodeRef = useRef(null); // Use ref to avoid stale closure
 
   // Email/Password login
   const handleSubmit = async (e) => {
