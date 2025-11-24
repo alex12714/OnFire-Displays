@@ -143,9 +143,15 @@ const Login = () => {
   };
 
   const checkQRStatus = async () => {
-    if (!qrCode) return;
+    console.log('🔍 checkQRStatus called, qrCode:', qrCode);
+    
+    if (!qrCode) {
+      console.log('⚠️ No QR code set, skipping check');
+      return;
+    }
     
     try {
+      console.log('🌐 Fetching status for QR:', qrCode);
       const response = await fetch('https://api2.onfire.so/rpc/check_qr_status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -156,7 +162,7 @@ const Login = () => {
       console.log('📡 QR Status Response:', data);
       
       if (!data || !data.success) {
-        console.error('❌ Invalid response from check_qr_status');
+        console.error('❌ Invalid response from check_qr_status', data);
         return;
       }
       
@@ -171,9 +177,12 @@ const Login = () => {
       } else if (data.status === 'pending') {
         console.log('⏳ Still pending... (polling continues)');
         // Continue polling
+      } else {
+        console.log('❓ Unknown status:', data.status);
       }
     } catch (error) {
       console.error('❌ Status check error:', error);
+      console.error('Error details:', error.message, error.stack);
     }
   };
 
