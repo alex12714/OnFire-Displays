@@ -75,13 +75,16 @@ const Login = () => {
       const data = await response.json();
       
       if (data.success) {
+        console.log('✅ QR Session generated:', data);
+        console.log('📱 QR Code:', data.qr_code);
+        console.log('⏰ Expires at:', data.expires_at);
+        
         setQrCode(data.qr_code);
         expiresAtRef.current = new Date(data.expires_at);
         await displayQRCode(data.qr_code);
         startPolling();
         setQrStatus('waiting');
         setQrMessage('Waiting for mobile app to scan...');
-        console.log('✅ QR Session generated');
       } else {
         throw new Error('Failed to generate QR session');
       }
