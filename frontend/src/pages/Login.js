@@ -107,7 +107,10 @@ const Login = () => {
   };
 
   const startPolling = () => {
-    // Poll every 2 seconds
+    console.log('🔄 Starting QR status polling (every 2 seconds)...');
+    // Call immediately first time
+    checkQRStatus();
+    // Then poll every 2 seconds
     pollingRef.current = setInterval(checkQRStatus, 2000);
     
     // Start timer countdown
