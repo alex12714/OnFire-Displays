@@ -146,22 +146,24 @@ const Login = () => {
         body: JSON.stringify({ p_qr_code: qrCode })
       });
 
-      const result = await response.json();
-      console.log('QR Status Response:', result);
+      const data = await response.json();
+      console.log('📡 QR Status Response:', data);
       
-      // API returns array with first element containing the data
-      const data = Array.isArray(result) ? result[0] : result;
+      if (!data || !data.success) {
+        console.error('❌ Invalid response from check_qr_status');
+        return;
+      }
       
-      if (data && data.status === 'confirmed') {
-        console.log('✅ QR Code confirmed! JWT Token:', data.jwt_token);
+      if (data.status === 'confirmed' && data.jwt_token) {
+        console.log('✅ QR Code confirmed! JWT Token received');
         stopPolling();
         handleQRSuccess(data.jwt_token);
-      } else if (data && data.status === 'expired') {
+      } else if (data.status === 'expired') {
         console.log('⏰ QR Code expired');
         stopPolling();
         handleQRExpired();
-      } else if (data && data.status === 'pending') {
-        console.log('⏳ Still waiting for confirmation...');
+      } else if (data.status === 'pending') {
+        console.log('⏳ Still pending... (polling continues)');
         // Continue polling
       }
     } catch (error) {
