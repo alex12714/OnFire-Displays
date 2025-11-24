@@ -227,7 +227,7 @@ const Login = () => {
                 className={`tab-button ${activeTab === 'email' ? 'active' : ''}`}
                 onClick={() => setActiveTab('email')}
               >
-                📧 Email / Password
+                📧 Email
               </button>
               <button
                 className={`tab-button ${activeTab === 'qr' ? 'active' : ''}`}
