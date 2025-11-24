@@ -145,19 +145,20 @@ const Login = () => {
   };
 
   const checkQRStatus = async () => {
-    console.log('🔍 checkQRStatus called, qrCode:', qrCode);
+    const currentQrCode = qrCodeRef.current;
+    console.log('🔍 checkQRStatus called, qrCode:', currentQrCode);
     
-    if (!qrCode) {
+    if (!currentQrCode) {
       console.log('⚠️ No QR code set, skipping check');
       return;
     }
     
     try {
-      console.log('🌐 Fetching status for QR:', qrCode);
+      console.log('🌐 Fetching status for QR:', currentQrCode);
       const response = await fetch('https://api2.onfire.so/rpc/check_qr_status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ p_qr_code: qrCode })
+        body: JSON.stringify({ p_qr_code: currentQrCode })
       });
 
       const data = await response.json();
