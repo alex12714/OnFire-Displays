@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import QRCode from 'qrcode';
 import onFireAPI from '../services/api';
 import './Login.css';
 
 const Login = () => {
+  const [activeTab, setActiveTab] = useState('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  
+  // QR Code states
+  const [qrCode, setQrCode] = useState(null);
+  const [qrStatus, setQrStatus] = useState('generating');
+  const [qrMessage, setQrMessage] = useState('Generating QR code...');
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const canvasRef = useRef(null);
+  const pollingRef = useRef(null);
+  const timerRef = useRef(null);
+  const expiresAtRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
