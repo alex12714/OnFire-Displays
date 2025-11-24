@@ -545,12 +545,26 @@
 }
 
 @media (max-width: 650px) {
+    .task-hud-container {
+        padding: 15px;
+    }
+    
     .task-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
+    
     .completed-task-thumbnail {
         width: 70px;
         height: 70px;
+    }
+    
+    .task-hud-title {
+        font-size: 2em;
+    }
+    
+    .section-title {
+        font-size: 1.5em;
     }
 }
 
