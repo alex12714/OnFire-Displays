@@ -278,23 +278,26 @@ const Login = () => {
             {/* QR Code Tab */}
             {activeTab === 'qr' && (
               <div className="qr-login-container">
-                <div className="qr-code-wrapper">
+                <div 
+                  className={`qr-code-wrapper ${qrStatus === 'expired' ? 'expired' : ''}`}
+                  onClick={qrStatus === 'expired' ? refreshQRCode : undefined}
+                  style={{ cursor: qrStatus === 'expired' ? 'pointer' : 'default' }}
+                >
                   <canvas ref={canvasRef} id="qr-canvas"></canvas>
-                  {timeRemaining && (
+                  {qrStatus === 'expired' && (
+                    <div className="reload-overlay">
+                      <div className="reload-icon">🔄</div>
+                    </div>
+                  )}
+                  {timeRemaining && qrStatus !== 'expired' && (
                     <div className="qr-timer">Expires in {timeRemaining}</div>
                   )}
                 </div>
                 
                 <div className={`qr-status-message ${qrStatus}`}>
                   {qrStatus === 'waiting' && <span className="loading-spinner"></span>}
-                  {qrMessage}
+                  {qrStatus !== 'expired' && qrMessage}
                 </div>
-
-                {qrStatus === 'expired' && (
-                  <Button onClick={refreshQRCode} className="refresh-button">
-                    🔄 Generate New QR Code
-                  </Button>
-                )}
 
                 <div className="qr-instructions">
                   <h3>How to login:</h3>
