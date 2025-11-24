@@ -78,11 +78,16 @@ const Login = () => {
       if (data.success) {
         console.log('✅ QR Session generated:', data);
         console.log('📱 QR Code:', data.qr_code);
-        console.log('⏰ Expires at:', data.expires_at);
+        console.log('⏰ API Expires at:', data.expires_at);
         
         setQrCode(data.qr_code);
         qrCodeRef.current = data.qr_code; // Store in ref for polling
-        expiresAtRef.current = new Date(data.expires_at);
+        
+        // Override expiration to 15 seconds from now (instead of API's 5 minutes)
+        const customExpiration = new Date(Date.now() + 15 * 1000); // 15 seconds
+        expiresAtRef.current = customExpiration;
+        console.log('⏰ Custom expiration set to 15 seconds:', customExpiration);
+        
         await displayQRCode(data.qr_code);
         startPolling();
         setQrStatus('waiting');
