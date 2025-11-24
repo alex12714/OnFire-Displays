@@ -46,25 +46,8 @@
 .task-hud-content {
     max-width: 1600px;
     margin: 0 auto;
-    min-width: 1200px;
-}
-
-@media (max-width: 1400px) {
-    .task-hud-content {
-        min-width: 900px;
-    }
-}
-
-@media (max-width: 1000px) {
-    .task-hud-content {
-        min-width: 600px;
-    }
-}
-
-@media (max-width: 650px) {
-    .task-hud-content {
-        min-width: 100%;
-    }
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .task-hud-title {
