@@ -81,6 +81,7 @@ const Login = () => {
         console.log('⏰ Expires at:', data.expires_at);
         
         setQrCode(data.qr_code);
+        qrCodeRef.current = data.qr_code; // Store in ref for polling
         expiresAtRef.current = new Date(data.expires_at);
         await displayQRCode(data.qr_code);
         startPolling();
