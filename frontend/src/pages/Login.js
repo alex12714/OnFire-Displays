@@ -169,18 +169,45 @@ const Login = () => {
     }
   };
 
-  const handleQRSuccess = (jwtToken) => {
+  const handleQRSuccess = async (jwtToken) => {
     console.log('🎉 QR Login successful!');
     setQrStatus('success');
     setQrMessage('✅ Login successful! Redirecting...');
     
-    // Store JWT token
-    localStorage.setItem('onfire_access_token', jwtToken);
-    
-    // Redirect to dashboard
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 1000);
+    try {
+      // Store JWT tokens in the same format as email/password login
+      localStorage.setItem('onfire_access_token', jwtToken);
+      localStorage.setItem('onfire_refresh_token', jwtToken); // Using same token for now
+      
+      // Fetch user data using the JWT token
+      const userResponse = await fetch('https://api2.onfire.so/users?select=id,email,username,first_name,last_name', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (userResponse.ok) {
+        const users = await userResponse.json();
+        if (users && users.length > 0) {
+          const userData = users[0];
+          localStorage.setItem('onfire_user_data', JSON.stringify(userData));
+          console.log('User data stored:', userData);
+        }
+      }
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
+    } catch (error) {
+      console.error('Error storing user data:', error);
+      // Still navigate even if user data fetch fails
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
+    }
   };
 
   const handleQRExpired = () => {
