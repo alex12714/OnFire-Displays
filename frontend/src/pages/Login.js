@@ -26,6 +26,7 @@ const Login = () => {
   const timerRef = useRef(null);
   const expiresAtRef = useRef(null);
 
+  // Email/Password login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -45,6 +46,171 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  // QR Code functions
+  const getClientIP = async () => {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch {
+      return '0.0.0.0';
+    }
+  };
+
+  const generateQRSession = async () => {
+    try {
+      setQrStatus('generating');
+      setQrMessage('Generating QR code...');
+      
+      const response = await fetch('https://api2.onfire.so/rpc/generate_qr_session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          p_ip_address: await getClientIP(),
+          p_user_agent: navigator.userAgent
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setQrCode(data.qr_code);
+        expiresAtRef.current = new Date(data.expires_at);
+        await displayQRCode(data.qr_code);
+        startPolling();
+        setQrStatus('waiting');
+        setQrMessage('Waiting for mobile app to scan...');
+        console.log('✅ QR Session generated');
+      } else {
+        throw new Error('Failed to generate QR session');
+      }
+    } catch (error) {
+      console.error('❌ Error generating QR:', error);
+      setQrStatus('error');
+      setQrMessage('Error generating QR code. Please refresh.');
+    }
+  };
+
+  const displayQRCode = async (code) => {
+    if (canvasRef.current) {
+      try {
+        await QRCode.toCanvas(canvasRef.current, code, {
+          width: 300,
+          margin: 2,
+          color: { dark: '#000000', light: '#FFFFFF' }
+        });
+      } catch (error) {
+        console.error('Error displaying QR code:', error);
+      }
+    }
+  };
+
+  const startPolling = () => {
+    // Poll every 2 seconds
+    pollingRef.current = setInterval(checkQRStatus, 2000);
+    
+    // Start timer countdown
+    startTimer();
+  };
+
+  const startTimer = () => {
+    updateTimer();
+    timerRef.current = setInterval(updateTimer, 1000);
+  };
+
+  const updateTimer = () => {
+    if (!expiresAtRef.current) return;
+    
+    const now = new Date();
+    const remaining = Math.max(0, expiresAtRef.current - now);
+    const seconds = Math.floor(remaining / 1000);
+    
+    if (seconds > 0) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      setTimeRemaining(`${minutes}:${secs.toString().padStart(2, '0')}`);
+    } else {
+      setTimeRemaining(null);
+      handleQRExpired();
+    }
+  };
+
+  const checkQRStatus = async () => {
+    if (!qrCode) return;
+    
+    try {
+      const response = await fetch('https://api2.onfire.so/rpc/check_qr_status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_qr_code: qrCode })
+      });
+
+      const data = await response.json();
+      
+      if (data.status === 'confirmed') {
+        stopPolling();
+        handleQRSuccess(data.jwt_token);
+      } else if (data.status === 'expired') {
+        stopPolling();
+        handleQRExpired();
+      }
+    } catch (error) {
+      console.error('❌ Status check error:', error);
+    }
+  };
+
+  const handleQRSuccess = (jwtToken) => {
+    console.log('🎉 QR Login successful!');
+    setQrStatus('success');
+    setQrMessage('✅ Login successful! Redirecting...');
+    
+    // Store JWT token
+    localStorage.setItem('onfire_access_token', jwtToken);
+    
+    // Redirect to dashboard
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 1000);
+  };
+
+  const handleQRExpired = () => {
+    setQrStatus('expired');
+    setQrMessage('⏰ QR code expired. Click to refresh.');
+    setTimeRemaining(null);
+  };
+
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const refreshQRCode = () => {
+    stopPolling();
+    setQrCode(null);
+    setTimeRemaining(null);
+    generateQRSession();
+  };
+
+  // Initialize QR code when tab is switched
+  useEffect(() => {
+    if (activeTab === 'qr' && !qrCode) {
+      generateQRSession();
+    }
+    
+    // Cleanup on unmount or tab switch
+    return () => {
+      if (activeTab !== 'qr') {
+        stopPolling();
+      }
+    };
+  }, [activeTab]);
 
   return (
     <div className="login-container">
