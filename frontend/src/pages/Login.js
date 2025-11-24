@@ -250,6 +250,7 @@ const Login = () => {
   const refreshQRCode = () => {
     stopPolling();
     setQrCode(null);
+    qrCodeRef.current = null;
     setTimeRemaining(null);
     generateQRSession();
   };
