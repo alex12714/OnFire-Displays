@@ -541,8 +541,13 @@
 }
 
 @media (max-width: 1000px) {
+    .task-hud-container {
+        padding: 20px;
+    }
+    
     .task-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
 }
 
