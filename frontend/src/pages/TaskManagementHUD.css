@@ -18,6 +18,9 @@
     background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-medium) 50%, var(--blue-dark) 100%);
     color: white;
     padding: var(--spacing-lg);
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .task-hud-loading {
