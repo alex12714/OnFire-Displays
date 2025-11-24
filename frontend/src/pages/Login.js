@@ -221,40 +221,92 @@ const Login = () => {
             <CardDescription>Sign in to access your Task Management HUD</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="login-form">
-              <div className="form-group">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <div className="form-group">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                />
-              </div>
-              {error && (
-                <div className="error-message">
-                  {error}
+            {/* Tab Navigation */}
+            <div className="login-tabs">
+              <button
+                className={`tab-button ${activeTab === 'email' ? 'active' : ''}`}
+                onClick={() => setActiveTab('email')}
+              >
+                📧 Email / Password
+              </button>
+              <button
+                className={`tab-button ${activeTab === 'qr' ? 'active' : ''}`}
+                onClick={() => setActiveTab('qr')}
+              >
+                📱 QR Code
+              </button>
+            </div>
+
+            {/* Email/Password Tab */}
+            {activeTab === 'email' && (
+              <form onSubmit={handleSubmit} className="login-form">
+                <div className="form-group">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your.email@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
                 </div>
-              )}
-              <Button type="submit" className="login-button" disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign In'}
-              </Button>
-            </form>
+                <div className="form-group">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                {error && (
+                  <div className="error-message">
+                    {error}
+                  </div>
+                )}
+                <Button type="submit" className="login-button" disabled={loading}>
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </form>
+            )}
+
+            {/* QR Code Tab */}
+            {activeTab === 'qr' && (
+              <div className="qr-login-container">
+                <div className="qr-code-wrapper">
+                  <canvas ref={canvasRef} id="qr-canvas"></canvas>
+                  {timeRemaining && (
+                    <div className="qr-timer">Expires in {timeRemaining}</div>
+                  )}
+                </div>
+                
+                <div className={`qr-status-message ${qrStatus}`}>
+                  {qrStatus === 'waiting' && <span className="loading-spinner"></span>}
+                  {qrMessage}
+                </div>
+
+                {qrStatus === 'expired' && (
+                  <Button onClick={refreshQRCode} className="refresh-button">
+                    🔄 Generate New QR Code
+                  </Button>
+                )}
+
+                <div className="qr-instructions">
+                  <h3>How to login:</h3>
+                  <ol>
+                    <li>Open <strong>OnFire app</strong> on your phone</li>
+                    <li>Go to <strong>Settings</strong></li>
+                    <li>Tap <strong>"Login on Web"</strong></li>
+                    <li>Scan this QR code</li>
+                  </ol>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
