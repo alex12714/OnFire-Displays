@@ -70,13 +70,11 @@
 .conversation-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.conversation-selector label {
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 600;
-  white-space: nowrap;
+  justify-content: center;
+  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .select-trigger {
