@@ -50,22 +50,65 @@
 }
 
 .conversation-selector label {
-  color: #ff9a56;
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
   white-space: nowrap;
 }
 
 .select-trigger {
-  min-width: 250px;
   background: rgba(26, 47, 79, 0.6);
-  border: 2px solid rgba(255, 107, 53, 0.3);
+  border: 2px solid rgba(255, 107, 53, 0.4);
   color: white;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-radius: 50px !important;
+  padding: 8px 24px !important;
+  min-width: auto !important;
+  width: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 44px;
 }
 
 .select-trigger:hover {
-  border-color: #ff6b35;
-  box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+  border-color: rgba(255, 107, 53, 0.7);
+  background: rgba(26, 47, 79, 0.8);
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.conversation-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 107, 53, 0.4);
+}
+
+.conversation-avatar-placeholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b35 0%, #ff9a56 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9em;
+  color: white;
+  border: 2px solid rgba(255, 107, 53, 0.4);
+}
+
+.conversation-name {
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Fix z-index for select dropdown */
