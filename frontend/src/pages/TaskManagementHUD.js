@@ -511,8 +511,8 @@ const TaskManagementHUD = ({ conversationId }) => {
                 );
               })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Earnings Modal */}
