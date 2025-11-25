@@ -80,13 +80,20 @@ const Dashboard = () => {
               <SelectContent>
                 {conversations.map((convo) => {
                   const displayName = convo.name || `Conversation ${convo.id.substring(0, 8)}`;
-                  const typeEmoji = convo.conversation_type === 'group' ? '👥' : 
-                                   convo.conversation_type === 'channel' ? '📢' : '💬';
-                  const messageCount = convo.message_count > 0 ? ` (${convo.message_count} msgs)` : '';
+                  const avatar = convo.avatar_url || convo.group_photo_url || null;
                   
                   return (
                     <SelectItem key={convo.id} value={convo.id}>
-                      {typeEmoji} {displayName}{messageCount}
+                      <div className="conversation-item">
+                        {avatar ? (
+                          <img src={avatar} alt={displayName} className="conversation-avatar" />
+                        ) : (
+                          <div className="conversation-avatar-placeholder">
+                            {displayName.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="conversation-name">{displayName}</span>
+                      </div>
                     </SelectItem>
                   );
                 })}
