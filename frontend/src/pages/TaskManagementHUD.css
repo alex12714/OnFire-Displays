@@ -770,20 +770,14 @@
     opacity: 0.3;
 }
 
-@media (max-width: 1400px) {
-    .task-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
 @media (max-width: 1000px) {
     .task-hud-container {
         padding: 20px;
     }
     
     .task-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 18px;
     }
 }
 
@@ -793,8 +787,8 @@
     }
     
     .task-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 15px;
     }
     
     .completed-task-thumbnail {
