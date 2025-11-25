@@ -527,6 +527,70 @@ const TaskManagementHUD = ({ conversationId }) => {
         </div>
       </div>
 
+      {/* Earnings Modal */}
+      {showEarningsModal && selectedPerson && (
+        <div className="earnings-modal" onClick={closeEarningsModal}>
+          <div className="earnings-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={closeEarningsModal}>✕</button>
+            
+            <div className="earnings-header">
+              <div className="earnings-avatar" style={{ background: selectedPerson.avatar ? 'transparent' : selectedPerson.color }}>
+                {selectedPerson.avatar ? (
+                  <img src={selectedPerson.avatar} alt={selectedPerson.name} className="avatar-image" />
+                ) : (
+                  selectedPerson.initial
+                )}
+              </div>
+              <h2 className="earnings-person-name">{selectedPerson.name}'s Earnings</h2>
+            </div>
+
+            <div className="horizontal-bars-container">
+              {(() => {
+                const progress = getPersonProgress(selectedPerson.id);
+                return (
+                  <>
+                    <div className="horizontal-bar-item">
+                      <div className="bar-info">
+                        <span className="bar-label-text">Daily</span>
+                        <span className="bar-amount-text">${progress.daily || 0}</span>
+                      </div>
+                      <div className="horizontal-bar">
+                        <div className="horizontal-bar-fill" style={{ width: `${progress.dayHeight}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="horizontal-bar-item">
+                      <div className="bar-info">
+                        <span className="bar-label-text">Weekly</span>
+                        <span className="bar-amount-text">${progress.weekly || 0}</span>
+                      </div>
+                      <div className="horizontal-bar">
+                        <div className="horizontal-bar-fill" style={{ width: `${progress.weekHeight}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="horizontal-bar-item">
+                      <div className="bar-info">
+                        <span className="bar-label-text">Monthly</span>
+                        <span className="bar-amount-text">${progress.monthly || 0}</span>
+                      </div>
+                      <div className="horizontal-bar">
+                        <div className="horizontal-bar-fill" style={{ width: `${progress.monthHeight}%` }}></div>
+                      </div>
+                    </div>
+
+                    <div className="earnings-total">
+                      <span>Total Earnings</span>
+                      <span className="total-amount">${progress.total || 0}</span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Success Modal */}
       {showModal && (
         <div className={`success-modal ${showModal ? 'active' : ''}`} onClick={() => setShowModal(false)}>
