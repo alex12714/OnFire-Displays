@@ -373,6 +373,16 @@ const TaskManagementHUD = ({ conversationId }) => {
     return `${Math.floor(diffMinutes/60)}h`;
   };
 
+  const handleAvatarClick = (person) => {
+    setSelectedPerson(person);
+    setShowEarningsModal(true);
+  };
+
+  const closeEarningsModal = () => {
+    setShowEarningsModal(false);
+    setSelectedPerson(null);
+  };
+
   if (loading) {
     return (
       <div className="task-hud-loading">
