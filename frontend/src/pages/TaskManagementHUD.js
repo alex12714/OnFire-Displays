@@ -400,23 +400,43 @@ const TaskManagementHUD = ({ conversationId }) => {
         
         {/* Participant Avatars Row */}
         <div className="participants-row">
-          {people.map(person => (
-            <div 
-              key={person.id} 
-              className="participant-avatar-wrapper"
-              onClick={() => handleAvatarClick(person)}
-              title={`View ${person.name}'s earnings`}
-            >
-              <div className="participant-avatar" style={{ background: person.avatar ? 'transparent' : person.color }}>
-                {person.avatar ? (
-                  <img src={person.avatar} alt={person.name} className="avatar-image" />
-                ) : (
-                  person.initial
-                )}
+          {(showAllParticipants ? people : people.slice(0, 5)).map(person => {
+            const progress = getPersonProgress(person.id);
+            return (
+              <div 
+                key={person.id} 
+                className="participant-avatar-wrapper"
+                onClick={() => handleAvatarClick(person)}
+                title={`View ${person.name}'s earnings`}
+              >
+                <div className="participant-avatar" style={{ background: person.avatar ? 'transparent' : person.color }}>
+                  {person.avatar ? (
+                    <img src={person.avatar} alt={person.name} className="avatar-image" />
+                  ) : (
+                    person.initial
+                  )}
+                </div>
+                <div className="participant-name">{person.name}</div>
+                <div className="participant-earnings">${progress.total || 0}</div>
               </div>
-              <div className="participant-name">{person.name}</div>
+            );
+          })}
+          
+          {/* Expand/Collapse Button */}
+          {people.length > 5 && (
+            <div 
+              className="participant-toggle"
+              onClick={() => setShowAllParticipants(!showAllParticipants)}
+              title={showAllParticipants ? 'Show less' : `Show ${people.length - 5} more`}
+            >
+              <div className="toggle-icon">
+                {showAllParticipants ? '▲' : '▼'}
+              </div>
+              <div className="toggle-text">
+                {showAllParticipants ? 'Less' : `+${people.length - 5}`}
+              </div>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Available Tasks Section */}
