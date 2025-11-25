@@ -395,63 +395,27 @@ const TaskManagementHUD = ({ conversationId }) => {
   return (
     <div className="task-hud-container">
       <div className="task-hud-content">
-        <h1 className="task-hud-title">Task Management HUD</h1>
+        <h1 className="task-hud-title">Tasks</h1>
         
-        {/* Conversation Info */}
-        <div className="conversation-info">
-          <div className="info-text">
-            Showing tasks for conversation: <strong>{conversationId?.substring(0, 8)}...</strong>
-          </div>
-          <div className="info-stats">
-            {tasks.length} active • {completedTasks.length} completed • {people.length} people
-          </div>
-        </div>
-
-        {/* Progress Section */}
-        <div className="progress-section">
-          <div className="progress-title">Earnings Progress</div>
-          <div className="person-progress-grid">
-            {people.map(person => {
-              const progress = getPersonProgress(person.id);
-              return (
-                <div key={person.id} className="person-progress-card">
-                  <div className="person-avatar-section">
-                    <div className="person-progress-name">{person.name}</div>
-                    <div className="avatar" style={{ background: person.avatar ? 'transparent' : person.color }}>
-                      {person.avatar ? (
-                        <img src={person.avatar} alt={person.name} className="avatar-image" />
-                      ) : (
-                        person.initial
-                      )}
-                    </div>
-                  </div>
-                  <div className="vertical-bars-container">
-                    <div className="vertical-bar-wrapper">
-                      <div className="bar-amount">${progress.daily || 0}</div>
-                      <div className="vertical-bar">
-                        <div className="vertical-bar-fill" style={{ height: `${progress.dayHeight}%` }}></div>
-                      </div>
-                      <div className="bar-label">D</div>
-                    </div>
-                    <div className="vertical-bar-wrapper">
-                      <div className="bar-amount">${progress.weekly || 0}</div>
-                      <div className="vertical-bar">
-                        <div className="vertical-bar-fill" style={{ height: `${progress.weekHeight}%` }}></div>
-                      </div>
-                      <div className="bar-label">W</div>
-                    </div>
-                    <div className="vertical-bar-wrapper">
-                      <div className="bar-amount">${progress.monthly || 0}</div>
-                      <div className="vertical-bar">
-                        <div className="vertical-bar-fill" style={{ height: `${progress.monthHeight}%` }}></div>
-                      </div>
-                      <div className="bar-label">M</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        {/* Participant Avatars Row */}
+        <div className="participants-row">
+          {people.map(person => (
+            <div 
+              key={person.id} 
+              className="participant-avatar-wrapper"
+              onClick={() => handleAvatarClick(person)}
+              title={`View ${person.name}'s earnings`}
+            >
+              <div className="participant-avatar" style={{ background: person.avatar ? 'transparent' : person.color }}>
+                {person.avatar ? (
+                  <img src={person.avatar} alt={person.name} className="avatar-image" />
+                ) : (
+                  person.initial
+                )}
+              </div>
+              <div className="participant-name">{person.name}</div>
+            </div>
+          ))}
         </div>
 
         {/* Available Tasks Section */}
