@@ -113,16 +113,27 @@
 }
 
 .logout-button {
-  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-  color: white;
+  background: rgba(220, 38, 38, 0.2);
+  border: 2px solid rgba(220, 38, 38, 0.5);
+  color: #ef4444;
   font-weight: 600;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  height: 40px;
+  padding: 8px;
+}
+
+.logout-button span {
+  display: inline;
 }
 
 .logout-button:hover {
+  background: rgba(220, 38, 38, 0.3);
+  border-color: #dc2626;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5);
 }
