@@ -292,6 +292,14 @@ const Login = () => {
     };
   }, [activeTab]);
 
+  // Cleanup on component unmount (e.g., when navigating away)
+  useEffect(() => {
+    return () => {
+      console.log('🧹 Login component unmounting, stopping all polling...');
+      stopPolling();
+    };
+  }, []);
+
   return (
     <div className="login-container">
       <div className="login-content">
