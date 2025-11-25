@@ -75,7 +75,28 @@ const Dashboard = () => {
             <label htmlFor="conversation-select">Select Conversation:</label>
             <Select value={selectedConversation} onValueChange={setSelectedConversation}>
               <SelectTrigger className="select-trigger" id="conversation-select">
-                <SelectValue placeholder="Choose a conversation" />
+                {selectedConversation ? (
+                  (() => {
+                    const selectedConvo = conversations.find(c => c.id === selectedConversation);
+                    const displayName = selectedConvo?.name || '';
+                    const avatar = selectedConvo?.avatar_url || selectedConvo?.group_photo_url || null;
+                    
+                    return (
+                      <div className="selected-conversation">
+                        {avatar ? (
+                          <img src={avatar} alt={displayName} className="conversation-avatar" />
+                        ) : (
+                          <div className="conversation-avatar-placeholder">
+                            {displayName.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="conversation-name">{displayName}</span>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  <SelectValue placeholder="Choose a conversation" />
+                )}
               </SelectTrigger>
               <SelectContent>
                 {conversations.map((convo) => {
