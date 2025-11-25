@@ -573,6 +573,10 @@
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+}
+
+/* Position absolute only for task card avatars */
+.task-card .avatar .avatar-image {
     position: absolute;
     top: 0;
     left: 0;
