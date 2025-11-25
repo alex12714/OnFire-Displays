@@ -67,60 +67,77 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <div className="header-left">
-          <h2 className="user-greeting">Welcome, {userData?.first_name || userData?.username || 'User'}!</h2>
+        {/* User Avatar - Left */}
+        <div className="user-profile">
+          <div className="user-avatar">
+            {userData?.avatar_url || userData?.profile_photo_url ? (
+              <img 
+                src={userData.avatar_url || userData.profile_photo_url} 
+                alt={userData.first_name || userData.username} 
+                className="user-avatar-image"
+              />
+            ) : (
+              <div className="user-avatar-placeholder">
+                {(userData?.first_name || userData?.username || 'U').charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+          <div className="user-name">{userData?.first_name || userData?.username || 'User'}</div>
         </div>
-        <div className="header-controls">
-          <div className="conversation-selector">
-            <label htmlFor="conversation-select">Select Conversation:</label>
-            <Select value={selectedConversation} onValueChange={setSelectedConversation}>
-              <SelectTrigger className="select-trigger" id="conversation-select">
-                {selectedConversation ? (
-                  (() => {
-                    const selectedConvo = conversations.find(c => c.id === selectedConversation);
-                    const displayName = selectedConvo?.name || '';
-                    const avatar = selectedConvo?.avatar_url || selectedConvo?.group_photo_url || null;
-                    
-                    return (
-                      <div className="selected-conversation">
-                        {avatar ? (
-                          <img src={avatar} alt={displayName} className="conversation-avatar" />
-                        ) : (
-                          <div className="conversation-avatar-placeholder">
-                            {displayName.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <span className="conversation-name">{displayName}</span>
-                      </div>
-                    );
-                  })()
-                ) : (
-                  <SelectValue placeholder="Choose a conversation" />
-                )}
-              </SelectTrigger>
-              <SelectContent>
-                {conversations.map((convo) => {
-                  const displayName = convo.name || `Conversation ${convo.id.substring(0, 8)}`;
-                  const avatar = convo.avatar_url || convo.group_photo_url || null;
+
+        {/* Group Selector - Center */}
+        <div className="conversation-selector">
+          <Select value={selectedConversation} onValueChange={setSelectedConversation}>
+            <SelectTrigger className="select-trigger" id="conversation-select">
+              {selectedConversation ? (
+                (() => {
+                  const selectedConvo = conversations.find(c => c.id === selectedConversation);
+                  const displayName = selectedConvo?.name || '';
+                  const avatar = selectedConvo?.avatar_url || selectedConvo?.group_photo_url || null;
                   
                   return (
-                    <SelectItem key={convo.id} value={convo.id}>
-                      <div className="conversation-item">
-                        {avatar ? (
-                          <img src={avatar} alt={displayName} className="conversation-avatar" />
-                        ) : (
-                          <div className="conversation-avatar-placeholder">
-                            {displayName.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <span className="conversation-name">{displayName}</span>
-                      </div>
-                    </SelectItem>
+                    <div className="selected-conversation">
+                      {avatar ? (
+                        <img src={avatar} alt={displayName} className="conversation-avatar" />
+                      ) : (
+                        <div className="conversation-avatar-placeholder">
+                          {displayName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="conversation-name">{displayName}</span>
+                    </div>
                   );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
+                })()
+              ) : (
+                <SelectValue placeholder="Choose a conversation" />
+              )}
+            </SelectTrigger>
+            <SelectContent>
+              {conversations.map((convo) => {
+                const displayName = convo.name || `Conversation ${convo.id.substring(0, 8)}`;
+                const avatar = convo.avatar_url || convo.group_photo_url || null;
+                
+                return (
+                  <SelectItem key={convo.id} value={convo.id}>
+                    <div className="conversation-item">
+                      {avatar ? (
+                        <img src={avatar} alt={displayName} className="conversation-avatar" />
+                      ) : (
+                        <div className="conversation-avatar-placeholder">
+                          {displayName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="conversation-name">{displayName}</span>
+                    </div>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Controls - Right */}
+        <div className="header-controls">
           <Button 
             variant="outline" 
             size="icon" 
