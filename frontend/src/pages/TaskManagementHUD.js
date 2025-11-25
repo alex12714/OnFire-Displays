@@ -420,14 +420,10 @@ const TaskManagementHUD = ({ conversationId }) => {
 
         {/* Available Tasks Section */}
         <div className="tasks-section">
-          <div className="section-title">Available Tasks</div>
           {tasks.length === 0 ? (
             <div className="no-tasks-message">
               <div style={{ fontSize: '3em', marginBottom: '20px' }}>📋</div>
               <p>No active tasks found for this conversation</p>
-              <p style={{ fontSize: '0.9em', marginTop: '10px', color: 'rgba(255, 255, 255, 0.6)' }}>
-                Tasks with chat_id matching this conversation will appear here
-              </p>
             </div>
           ) : (
             <div className="task-grid">
@@ -471,18 +467,10 @@ const TaskManagementHUD = ({ conversationId }) => {
           )}
         </div>
 
-        {/* Completed Tasks Section */}
-        <div className="completed-section">
-          <div className="section-title">Completed Tasks</div>
-          {completedTasks.length === 0 ? (
-            <div className="empty-gallery">
-              <div className="empty-gallery-icon">📸</div>
-              <p>No completed tasks yet</p>
-              <p style={{ fontSize: '0.9em', marginTop: '10px' }}>
-                Click on avatars above to assign and complete tasks!
-              </p>
-            </div>
-          ) : (
+        {/* Completed Tasks Section - Only show if there are completed tasks */}
+        {completedTasks.length > 0 && (
+          <div className="completed-section">
+            <div className="section-title">Completed Tasks</div>
             <div className="completed-gallery">
               {Object.entries(getCompletedByPerson()).map(([personId, data]) => {
                 const totalCoins = data.tasks.reduce((sum, t) => sum + getTaskCoins(t), 0);
