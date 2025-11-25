@@ -200,11 +200,7 @@ const Login = () => {
     setQrMessage('✅ Login successful! Redirecting...');
     
     try {
-      // Store JWT tokens in the same format as email/password login
-      localStorage.setItem('onfire_access_token', jwtToken);
-      localStorage.setItem('onfire_refresh_token', jwtToken); // Using same token for now
-      
-      // Fetch user data using the JWT token
+      // Fetch user data first
       const userResponse = await fetch('https://api2.onfire.so/users?select=id,email,username,first_name,last_name', {
         method: 'GET',
         headers: {
@@ -213,25 +209,47 @@ const Login = () => {
         }
       });
       
+      let userData = null;
       if (userResponse.ok) {
         const users = await userResponse.json();
         if (users && users.length > 0) {
-          const userData = users[0];
-          localStorage.setItem('onfire_user_data', JSON.stringify(userData));
-          console.log('User data stored:', userData);
+          userData = users[0];
+          console.log('✅ User data fetched:', userData);
         }
       }
       
-      // Redirect to dashboard
+      // Store in localStorage
+      localStorage.setItem('onfire_access_token', jwtToken);
+      localStorage.setItem('onfire_refresh_token', jwtToken);
+      if (userData) {
+        localStorage.setItem('onfire_user_data', JSON.stringify(userData));
+      }
+      
+      // IMPORTANT: Initialize onFireAPI instance variables
+      // This is critical for isAuthenticated() to work
+      onFireAPI.accessToken = jwtToken;
+      onFireAPI.refreshToken = jwtToken;
+      onFireAPI.userData = userData;
+      
+      console.log('✅ OnFireAPI instance initialized');
+      console.log('✅ isAuthenticated:', onFireAPI.isAuthenticated());
+      
+      // Wait a bit for all state to settle, then navigate
       setTimeout(() => {
+        console.log('🚀 Navigating to dashboard...');
         navigate('/dashboard');
-      }, 1000);
+      }, 500);
     } catch (error) {
-      console.error('Error storing user data:', error);
-      // Still navigate even if user data fetch fails
+      console.error('❌ Error in QR login success handler:', error);
+      // Even on error, try to set basic auth
+      localStorage.setItem('onfire_access_token', jwtToken);
+      localStorage.setItem('onfire_refresh_token', jwtToken);
+      onFireAPI.accessToken = jwtToken;
+      onFireAPI.refreshToken = jwtToken;
+      
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1000);
+      }, 500);
     }
   };
 
