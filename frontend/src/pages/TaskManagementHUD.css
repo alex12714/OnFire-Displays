@@ -52,7 +52,7 @@
 
 .task-hud-title {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     background: linear-gradient(135deg, var(--orange-primary) 0%, var(--orange-light) 50%, var(--orange-primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -67,8 +67,8 @@
     justify-content: center;
     align-items: center;
     gap: 30px;
-    margin-bottom: 40px;
-    padding: 20px;
+    margin-bottom: 20px;
+    padding: 15px 20px;
     flex-wrap: wrap;
 }
 
