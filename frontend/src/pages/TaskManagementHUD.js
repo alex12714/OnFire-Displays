@@ -13,6 +13,7 @@ const TaskManagementHUD = ({ conversationId }) => {
   const [transactionSummaries, setTransactionSummaries] = useState({});
   const [showEarningsModal, setShowEarningsModal] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState(null);
+  const [showAllParticipants, setShowAllParticipants] = useState(false);
 
   useEffect(() => {
     if (conversationId) {
