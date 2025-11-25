@@ -111,6 +111,13 @@
   white-space: nowrap;
 }
 
+.selected-conversation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
 /* Fix z-index for select dropdown */
 [data-radix-popper-content-wrapper] {
   z-index: 9999 !important;
