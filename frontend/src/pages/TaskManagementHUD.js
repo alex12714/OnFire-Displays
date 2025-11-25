@@ -441,7 +441,7 @@ const TaskManagementHUD = ({ conversationId }) => {
                   <div className="task-content">
                     <div className="task-title">{task.title}</div>
                     <div className="avatars-row">
-                      {people.map(person => (
+                      {people.slice(0, 5).map(person => (
                         <div
                           key={person.id}
                           className="avatar"
@@ -459,6 +459,11 @@ const TaskManagementHUD = ({ conversationId }) => {
                           )}
                         </div>
                       ))}
+                      {people.length > 5 && (
+                        <div className="avatar avatar-more" title={`+${people.length - 5} more`}>
+                          +{people.length - 5}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
