@@ -476,9 +476,9 @@
 
 .task-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-lg);
-    padding-top: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: var(--spacing-lg);
 }
 
 .task-card {
