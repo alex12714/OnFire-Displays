@@ -11,8 +11,9 @@ const TaskManagementHUD = ({ conversationId }) => {
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({ personName: '', taskTitle: '', coins: 0 });
   const [transactionSummaries, setTransactionSummaries] = useState({});
-  const [showDisplayModal, setShowDisplayModal] = useState(false);
-  const [displayName, setDisplayName] = useState('');
+  const [showEarningsModal, setShowEarningsModal] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [showAllParticipants, setShowAllParticipants] = useState(false);
 
   useEffect(() => {
     if (conversationId) {
