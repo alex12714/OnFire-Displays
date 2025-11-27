@@ -264,12 +264,28 @@ const Login = () => {
   };
 
   const handleDisplayLinked = async (jwtToken, displayId) => {
-    console.log('📺 Display linked! Display ID:', displayId);
-    setQrStatus('success');
-    setQrMessage('✅ Display linked! Redirecting...');
+    console.log('📺 Display linked! Fetching display info...');
     
     try {
-      // Fetch user data first
+      // Fetch display information
+      const displayResponse = await fetch(`https://api2.onfire.so/displays?id=eq.${displayId}&select=id,name`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      let displayInfo = null;
+      if (displayResponse.ok) {
+        const displays = await displayResponse.json();
+        if (displays && displays.length > 0) {
+          displayInfo = displays[0];
+          console.log('✅ Display info fetched:', displayInfo);
+        }
+      }
+      
+      // Fetch user data
       const userResponse = await fetch('https://api2.onfire.so/users?select=id,email,username,first_name,last_name', {
         method: 'GET',
         headers: {
@@ -287,7 +303,7 @@ const Login = () => {
         }
       }
       
-      // Store in localStorage (including display_id)
+      // Store in localStorage
       localStorage.setItem('onfire_access_token', jwtToken);
       localStorage.setItem('onfire_refresh_token', jwtToken);
       localStorage.setItem('onfire_display_id', displayId);
@@ -295,23 +311,34 @@ const Login = () => {
         localStorage.setItem('onfire_user_data', JSON.stringify(userData));
       }
       
-      // IMPORTANT: Initialize onFireAPI instance variables
+      // Initialize onFireAPI instance variables
       onFireAPI.accessToken = jwtToken;
       onFireAPI.refreshToken = jwtToken;
       onFireAPI.userData = userData;
       
-      console.log('✅ OnFireAPI instance initialized with display');
-      console.log('✅ isAuthenticated:', onFireAPI.isAuthenticated());
-      console.log('📺 Display ID stored:', displayId);
+      console.log('✅ OnFireAPI initialized with display');
       
-      // Wait a bit for all state to settle, then navigate
-      setTimeout(() => {
-        console.log('🚀 Navigating to dashboard with display...');
-        navigate('/dashboard');
-      }, 500);
+      // Show display success modal
+      if (displayInfo && displayInfo.name) {
+        setDisplayName(displayInfo.name);
+        setShowDisplayModal(true);
+        setQrStatus('success');
+        setQrMessage('');
+        
+        // Auto-dismiss modal after 3 seconds and navigate
+        setTimeout(() => {
+          setShowDisplayModal(false);
+          navigate('/dashboard');
+        }, 3000);
+      } else {
+        // No display name found, navigate immediately
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
+      }
     } catch (error) {
-      console.error('❌ Error in display linked handler:', error);
-      // Even on error, try to set basic auth
+      console.error('❌ Error fetching display info:', error);
+      // On error, still set basic auth and navigate
       localStorage.setItem('onfire_access_token', jwtToken);
       localStorage.setItem('onfire_refresh_token', jwtToken);
       localStorage.setItem('onfire_display_id', displayId);
