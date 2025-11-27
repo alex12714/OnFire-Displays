@@ -499,6 +499,17 @@ const Login = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Display Success Modal */}
+      {showDisplayModal && (
+        <div className="display-modal-overlay">
+          <div className="display-modal-content">
+            <div className="display-success-icon">✓</div>
+            <h2 className="display-modal-title">Successfully Connected!</h2>
+            <p className="display-modal-name">{displayName}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
