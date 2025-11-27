@@ -178,8 +178,16 @@ const Login = () => {
       
       if (data.status === 'confirmed' && data.jwt_token) {
         console.log('✅ QR Code confirmed! JWT Token received');
+        console.log('📺 Display ID:', data.display_id);
         stopPolling();
-        handleQRSuccess(data.jwt_token);
+        
+        // Check if display_id is present
+        if (data.display_id) {
+          handleDisplayLinked(data.jwt_token, data.display_id);
+        } else {
+          // Fallback: No display linked (regular login)
+          handleQRSuccess(data.jwt_token);
+        }
       } else if (data.status === 'expired') {
         console.log('⏰ QR Code expired');
         stopPolling();
