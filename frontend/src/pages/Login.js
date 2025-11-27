@@ -263,6 +263,67 @@ const Login = () => {
     }
   };
 
+  const handleDisplayLinked = async (jwtToken, displayId) => {
+    console.log('📺 Display linked! Display ID:', displayId);
+    setQrStatus('success');
+    setQrMessage('✅ Display linked! Redirecting...');
+    
+    try {
+      // Fetch user data first
+      const userResponse = await fetch('https://api2.onfire.so/users?select=id,email,username,first_name,last_name', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      let userData = null;
+      if (userResponse.ok) {
+        const users = await userResponse.json();
+        if (users && users.length > 0) {
+          userData = users[0];
+          console.log('✅ User data fetched:', userData);
+        }
+      }
+      
+      // Store in localStorage (including display_id)
+      localStorage.setItem('onfire_access_token', jwtToken);
+      localStorage.setItem('onfire_refresh_token', jwtToken);
+      localStorage.setItem('onfire_display_id', displayId);
+      if (userData) {
+        localStorage.setItem('onfire_user_data', JSON.stringify(userData));
+      }
+      
+      // IMPORTANT: Initialize onFireAPI instance variables
+      onFireAPI.accessToken = jwtToken;
+      onFireAPI.refreshToken = jwtToken;
+      onFireAPI.userData = userData;
+      
+      console.log('✅ OnFireAPI instance initialized with display');
+      console.log('✅ isAuthenticated:', onFireAPI.isAuthenticated());
+      console.log('📺 Display ID stored:', displayId);
+      
+      // Wait a bit for all state to settle, then navigate
+      setTimeout(() => {
+        console.log('🚀 Navigating to dashboard with display...');
+        navigate('/dashboard');
+      }, 500);
+    } catch (error) {
+      console.error('❌ Error in display linked handler:', error);
+      // Even on error, try to set basic auth
+      localStorage.setItem('onfire_access_token', jwtToken);
+      localStorage.setItem('onfire_refresh_token', jwtToken);
+      localStorage.setItem('onfire_display_id', displayId);
+      onFireAPI.accessToken = jwtToken;
+      onFireAPI.refreshToken = jwtToken;
+      
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 500);
+    }
+  };
+
   const handleQRExpired = () => {
     setQrStatus('expired');
     setQrMessage('⏰ QR code expired. Click to refresh.');
