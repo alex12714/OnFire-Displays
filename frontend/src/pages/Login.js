@@ -21,6 +21,8 @@ const Login = () => {
   const [qrStatus, setQrStatus] = useState('generating');
   const [qrMessage, setQrMessage] = useState('Generating QR code...');
   const [timeRemaining, setTimeRemaining] = useState(null);
+  const [showDisplayModal, setShowDisplayModal] = useState(false);
+  const [displayName, setDisplayName] = useState('');
   const canvasRef = useRef(null);
   const pollingRef = useRef(null);
   const timerRef = useRef(null);
