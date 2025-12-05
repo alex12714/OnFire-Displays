@@ -55,6 +55,11 @@ class OnFireAPI {
     localStorage.removeItem('onfire_access_token');
     localStorage.removeItem('onfire_refresh_token');
     localStorage.removeItem('onfire_user_data');
+    localStorage.removeItem('onfire_display_id');
+    
+    // Clear cookie for *.onfire.so domain
+    document.cookie = 'onfire_access_token=; domain=.onfire.so; path=/; max-age=0; SameSite=None; Secure';
+    console.log('✅ Cookie cleared for *.onfire.so domain');
   }
 
   isAuthenticated() {
