@@ -32,8 +32,15 @@ class OnFireAPI {
         localStorage.setItem('onfire_user_data', JSON.stringify(this.userData));
 
         // Store JWT as cookie for *.onfire.so domain
-        document.cookie = `jwt=${this.accessToken}; Domain=.onfire.so; Secure; Path=/`;
-        console.log('✅ Cookie "jwt" set for *.onfire.so domain');
+        const isProduction = window.location.hostname.includes('onfire.so');
+        if (isProduction) {
+          document.cookie = `jwt=${this.accessToken}; Domain=.onfire.so; Secure; Path=/`;
+          console.log('✅ Cookie "jwt" set for *.onfire.so domain');
+        } else {
+          // Localhost: set cookie without domain restriction
+          document.cookie = `jwt=${this.accessToken}; Path=/`;
+          console.log('✅ Cookie "jwt" set for localhost (testing)');
+        }
 
         return { success: true, userData: this.userData };
       } else {
