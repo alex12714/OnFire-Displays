@@ -31,6 +31,10 @@ class OnFireAPI {
         localStorage.setItem('onfire_refresh_token', this.refreshToken);
         localStorage.setItem('onfire_user_data', JSON.stringify(this.userData));
 
+        // Store JWT as cookie for *.onfire.so domain
+        document.cookie = `onfire_access_token=${this.accessToken}; domain=.onfire.so; path=/; max-age=86400; SameSite=None; Secure`;
+        console.log('✅ Cookie set for *.onfire.so domain');
+
         return { success: true, userData: this.userData };
       } else {
         return { success: false, message: data.message };
