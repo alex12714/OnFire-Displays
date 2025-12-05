@@ -315,6 +315,10 @@ const Login = () => {
         localStorage.setItem('onfire_user_data', JSON.stringify(userData));
       }
       
+      // Store JWT as cookie for *.onfire.so domain
+      document.cookie = `onfire_access_token=${jwtToken}; domain=.onfire.so; path=/; max-age=86400; SameSite=None; Secure`;
+      console.log('✅ Cookie set for *.onfire.so domain');
+      
       // Initialize onFireAPI instance variables
       onFireAPI.accessToken = jwtToken;
       onFireAPI.refreshToken = jwtToken;
