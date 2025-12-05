@@ -236,8 +236,15 @@ const Login = () => {
       }
       
       // Store JWT as cookie for *.onfire.so domain
-      document.cookie = `jwt=${jwtToken}; Domain=.onfire.so; Secure; Path=/`;
-      console.log('✅ Cookie "jwt" set for *.onfire.so domain');
+      const isProduction = window.location.hostname.includes('onfire.so');
+      if (isProduction) {
+        document.cookie = `jwt=${jwtToken}; Domain=.onfire.so; Secure; Path=/`;
+        console.log('✅ Cookie "jwt" set for *.onfire.so domain');
+      } else {
+        // Localhost: set cookie without domain restriction
+        document.cookie = `jwt=${jwtToken}; Path=/`;
+        console.log('✅ Cookie "jwt" set for localhost (testing)');
+      }
       
       // IMPORTANT: Initialize onFireAPI instance variables
       // This is critical for isAuthenticated() to work
@@ -316,8 +323,15 @@ const Login = () => {
       }
       
       // Store JWT as cookie for *.onfire.so domain
-      document.cookie = `jwt=${jwtToken}; Domain=.onfire.so; Secure; Path=/`;
-      console.log('✅ Cookie "jwt" set for *.onfire.so domain');
+      const isProduction = window.location.hostname.includes('onfire.so');
+      if (isProduction) {
+        document.cookie = `jwt=${jwtToken}; Domain=.onfire.so; Secure; Path=/`;
+        console.log('✅ Cookie "jwt" set for *.onfire.so domain');
+      } else {
+        // Localhost: set cookie without domain restriction
+        document.cookie = `jwt=${jwtToken}; Path=/`;
+        console.log('✅ Cookie "jwt" set for localhost (testing)');
+      }
       
       // Initialize onFireAPI instance variables
       onFireAPI.accessToken = jwtToken;
