@@ -65,8 +65,15 @@ class OnFireAPI {
     localStorage.removeItem('onfire_display_id');
     
     // Clear cookie for *.onfire.so domain
-    document.cookie = 'jwt=; Domain=.onfire.so; Secure; Path=/; Max-Age=0';
-    console.log('✅ Cookie "jwt" cleared for *.onfire.so domain');
+    const isProduction = window.location.hostname.includes('onfire.so');
+    if (isProduction) {
+      document.cookie = 'jwt=; Domain=.onfire.so; Secure; Path=/; Max-Age=0';
+      console.log('✅ Cookie "jwt" cleared for *.onfire.so domain');
+    } else {
+      // Localhost: clear cookie without domain restriction
+      document.cookie = 'jwt=; Path=/; Max-Age=0';
+      console.log('✅ Cookie "jwt" cleared for localhost');
+    }
   }
 
   isAuthenticated() {
