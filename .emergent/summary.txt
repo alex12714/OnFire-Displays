@@ -13,75 +13,80 @@
 10. The earnings graph should update in real-time when a task is completed or un-completed.
 11. The UI should only display the user's first name.
 12. The price/coin value on task cards should be in a pill-shaped container straddling the top border.
+13. Implement QR code login functionality.
+14. Implement a slideshow page that embeds an external URL and uses a domain-specific cookie for authentication.
+15. The UI must be responsive and adapt to mobile, tablet, and desktop screens without horizontal scrolling.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React application has been developed that integrates with the external OnFire API. The application features:
-- A login page for user authentication using JWT.
-- A dashboard page where users can select a conversation (group) from a dropdown.
-- The main Task Management HUD, which displays tasks for the selected conversation.
-- Functionality to complete tasks, which creates a  transaction and moves the task to a Completed gallery.
-- Functionality to un-complete tasks, which reverts the task status via a PATCH request and creates an  reversal transaction with a negative amount.
-- User avatars and first names are fetched and displayed.
-- An Earnings Progress section with vertical bar charts that shows daily, weekly, and monthly earnings fetched from a transaction summary API endpoint.
+A full-stack React application that integrates with the external OnFire API.
+-   **Login:** A responsive login page with two tabs: standard Email/Password and a fully functional QR Code login. The QR code flow includes a timer, an expired state with an inline refresh, and a success modal upon linking a display.
+-   **Authentication:** JWT-based. Upon login, a  cookie is set, which is domain-aware (works on localhost and ).
+-   **Dashboard:** A responsive header that displays the logged-in user's avatar on the left, a centered pill-shaped conversation (group) selector, and controls (refresh, logout icon) on the right.
+-   **Task HUD:** The main screen, titled Tasks, displays an expandable row of participant avatars with their total earnings. Below are the Available Tasks and Completed Tasks sections. The task grid is responsive. Clicking a participant's avatar in the top row opens a modal with their detailed earnings.
+-   **Slideshow Page:** A dedicated  route that embeds an external OnFire slideshow in an iframe, relying on the  cookie for authentication.
 
 **Last working item**:
--   **Last item agent was working:** Implementing a real-time refresh for the transaction summary charts. The goal was to ensure that after a user completes or un-completes a task, the earnings graphs at the top of the page update immediately without requiring a page reload.
--   **Status:** IN PROGRESS
+-   **Last item agent was working:** The user requested a fix for the login page layout on mobile devices, as it was not filling the full vertical space, leaving white bars at the top and bottom. The agent was about to modify  to fix this.
+-   **Status:** NOT STARTED
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent. The agent should log in, navigate to the dashboard, select a group, complete a task, and verify that the progress bars for the corresponding user update instantly. It should then un-complete the same task and verify the progress bars revert.
+-   **Which testing method agent to use?** screenshot tool (to verify the mobile layout).
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Test Real-time Earnings Graph Refresh (P0)**
-    -   **Description:** The functionality to refresh the transaction summary data after a task is completed or un-completed has been implemented but not tested.
-    -   **Status:** USER VERIFICATION PENDING
-    -   **Why fix this issue and what will be achieved with the fix?** To ensure the user gets immediate visual feedback on their earnings after performing an action, which is a critical part of the user experience.
+-   **Issue 1: Fix Login Page Vertical Space on Mobile (P0)**
+    -   **Description:** The main login page container () does not use , resulting in white space at the top and bottom on mobile screens.
+    -   **Status:** NOT STARTED
     -   **Next debug checklist:**
-        1.  Log into the application.
-        2.  Navigate to the Task Management HUD.
-        3.  Observe the initial state of the progress bars.
-        4.  Complete a task for a user.
-        5.  **Verify:** Does the corresponding user's progress bar and total amount update immediately?
-        6.  Un-complete the same task.
-        7.  **Verify:** Does the progress bar and amount revert to the previous state?
-        8.  Check the browser's network tab to confirm the  API call is made after both actions.
-        9.  Check console logs for any errors.
+        1.  Modify .
+        2.  Change the  to have .
+        3.  Use the screenshot tool with a mobile viewport (e.g., 375x812) to verify the fix.
+-   **Issue 2: Test Real-time Earnings Graph Refresh (P1)**
+    -   **Description:** The functionality to refresh the transaction summary data (and thus the earnings graphs/totals) after a task is completed or un-completed was implemented in the previous session but was never explicitly tested or verified.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Next debug checklist:**
+        1.  Log in and navigate to the Task HUD.
+        2.  Note the earnings total for a user in the top participant row.
+        3.  Complete a task for that user.
+        4.  Verify if the earnings total updates immediately without a page reload.
+        5.  Un-complete the same task and verify the total reverts.
 
 **In progress Task List**:
 None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **Implement other rotating screens (P1):** The initial problem statement mentioned different rotating screens, but only the main HUD screen has been built. The next phase would be to clarify what these other screens are and implement them.
+    -   None currently planned.
+-   **Future Tasks:**
+    -   **Implement other rotating screens (P1):** The initial problem statement mentioned different rotating screens, but only the main HUD and a slideshow page have been built. This needs clarification from the user.
 
 **Completed work in this session**
--   **Initial Frontend:** Converted the provided HTML/CSS/JS into a functional React component () with mock data and localStorage.
--   **UI Bug Fix:** Fixed squished avatar placeholders on task cards.
--   **API Integration:**
-    -   Implemented a login page and JWT authentication flow.
-    -   Created a dashboard page with a dropdown to select conversations (groups).
-    -   Integrated API calls to fetch conversations, tasks, users, and user profiles.
--   **Task Management:**
-    -   Implemented  functionality, which posts to the  endpoint.
-    -   Implemented  functionality, which sends a PATCH request to update the task status to .
--   **Transaction Management:**
-    -   Created  transactions upon task completion.
-    -   Created  reversal transactions (with negative amounts) upon un-completing a task.
--   **Earnings Graph:** Integrated the  endpoint to display real earnings data in the progress bars.
--   **UI/UX Improvements:**
-    -   Fixed a z-index issue with the dropdown menu.
-    -   Updated the UI to only display user's first names.
-    -   Redesigned the task price display as a pill on the card's border.
-    -   Removed the confirmation alert when un-completing a task.
-    -   Fixed a visual bug where the task list did not update immediately after an action.
--   **Bug Fixes:**
-    -   Resolved multiple issues with the transaction creation payload, including incorrect currency codes, handling of auto-generated fields, and fixing a data type mismatch for .
-    -   Fixed a double-popup issue on task completion.
+-   **QR Code Login:** Implemented a full QR code login flow with polling, expiration (customized to 15 seconds for testing), an intuitive refresh mechanism (clicking the faded QR code), and a success modal for linked displays.
+-   **QR Code Bug Fixes:**
+    -   Resolved a critical bug where QR login failed sporadically due to the API service instance not being updated with the new token.
+    -   Fixed a bug where polling failed due to a stale state closure issue by using  for the QR code value.
+-   **API Integration & Data Display:**
+    -   Fixed task cards to display  from the API instead of a hardcoded value.
+    -   Updated data fetching to use the  view to get  and , ensuring real user avatars and names are displayed.
+    -   Fixed a bug to ensure all participants of a conversation are displayed in the UI, not just those associated with a task.
+-   **UI/Layout Refactoring:**
+    -   **Responsive Design:** Made the entire application responsive, eliminating horizontal scroll on all pages (, , ).
+    -   **Dashboard Header:** Redesigned to show the user's avatar on the left, a centered pill-shaped group selector, and icon-only buttons on the right for mobile.
+    -   **Task HUD Layout:**
+        -   Changed the title to Tasks and removed extraneous text.
+        -   Implemented an expandable top row for participant avatars, which shows total earnings and can be toggled to show all participants.
+        -   The Completed Tasks section is now hidden if it's empty.
+        -   Task cards are now limited to showing the first 5 participant avatars in a single row.
+    -   **Bug Fix:** Removed a large avatar overlay that was covering the screen.
+-   **Cookie-based Authentication for iFrame:**
+    -   Implemented setting a  cookie on the  domain upon successful login.
+    -   Created a new  page with an iframe that successfully loads and authenticates with the shared cookie.
+    -   Made the cookie setting logic environment-aware (works on  and production).
+-   **Documentation:** Created several markdown guides for QR code integration and cookie authentication (, , ) and a  page.
 
 **Earlier issues found/mentioned but not fixed**
-None.
+None from this session. The pending test from the previous session is listed under All Pending/In progress Issue list.
 
 **Known issue recurrence from previous fork**
 None.
@@ -90,93 +95,81 @@ None.
 
 
 **Key Technical Concepts**
--   **Frontend:** React,  for routing,  for API calls.
--   **UI:** Shadcn components built on Radix UI and Tailwind CSS.
--   **Backend:** Interacts exclusively with an external third-party API (OnFire at ), which appears to be a PostgREST interface.
--   **Authentication:** JWT-based. The token is retrieved from a  endpoint and stored in localStorage.
--   **State Management:** Component-level state using  and  hooks within the  component.
+-   **Frontend:** React, , .
+-   **UI:** Tailwind CSS, Shadcn components.
+-   **State Management:** , ,  (critically for fixing QR polling).
+-   **Authentication:** JWT stored in both  and a domain-specific .
+-   **Backend:** Exclusively interacts with the external OnFire API ().
+-   **Async Operations:** Heavy use of  for API calls and / for the QR code polling mechanism.
 
 **key DB schema**
-The application does not have its own database. It interacts with the OnFire API. Key data schemas observed are:
--   **transactions:** 
--   **tasks:** 
--   **conversations:** 
--   **user_profiles:** 
+-   (No local DB) Interacts with OnFire API schemas.
+-   **displays:**  - Used for the Display Linked modal after QR login.
 
 **changes in tech stack**
-None.
+-   : Npm package added for generating QR codes on the frontend.
 
-**All files**
--   : The core component for the main application screen. Contains all logic for fetching data, handling user interactions, and rendering the UI.
--   : A class-based service that centralizes all API calls to the OnFire backend, including authentication, fetching data, and posting updates.
--   : A wrapper component that allows the user to select a conversation, which then passes the  to .
--   : The login page component.
--   : The root component that sets up React Router.
--   : Styles specific to the HUD.
--   : Global styles, contains an important z-index fix for Radix UI portals.
--   : Modified to attempt a z-index fix (though the final fix was in ).
+**All files of reference**
+-   : Heavily modified to include a tabbed UI, QR code generation, polling logic, display-linking modal, and cookie setting.
+-   : Heavily modified with a new responsive layout, expandable participant list, earnings display, and conditional rendering.
+-   : Modified to implement a new responsive header layout with a centered, pill-shaped group selector.
+-   : Updated to handle setting the auth cookie on login/logout.
+-   : Updated to add the new  route.
+-   : New file for the iframe component.
+-   All corresponding CSS files (, , , ) were significantly updated for responsiveness and new features.
+-   , , : New documentation files.
 
 **Areas that need refactoring**:
--   The  component is very large and handles a lot of state and logic. It could be broken down into smaller, more manageable components and hooks (e.g., , ).
+-   ****: This component has become very large and complex. It manages email/password state, QR code generation, complex polling logic with refs, timers, and multiple modals. It should be broken down into smaller components (, ) and custom hooks ().
+-   ****: Similarly, this component manages a large amount of state and logic for tasks, participants, earnings modals, and user interactions. It could be refactored into smaller, more focused components (, , ) and custom hooks ().
 
 **key api endpoints**
--   : Authenticates user and returns JWT.
--   : Fetches list of conversations/groups.
--   : Fetches tasks for a given conversation.
--   : Marks a task as complete.
--   : Updates a task (used to set status to ).
--   : Fetches user profile data, including avatars.
--   : Creates a new transaction record.
--   : Fetches aggregated earnings data for a user.
+-   : Generates a session for QR code login.
+-   : Polls to check the status of a QR code login attempt.
+-   : Fetches conversation members with their profile data.
+-   : Fetches display information by ID.
 
 **Critical Info for New Agent**
--   The entire backend is the external OnFire API (). All data operations must go through the service located at .
--   Authentication is the first step. The app is unusable without a valid JWT token, which is stored in .
--   The API documentation provided by the user is crucial. Several bugs were fixed by referring to the correct API request formats, especially for the  endpoint.
--   The  field in the transactions payload caused a  error because the API expected an integer but received a string (UUID). The field was ultimately removed from the payload to fix the issue, as the user's working  command did not include it.
+-   **Cookie Setting Logic:** The app uses a function that conditionally sets the  cookie. For , the cookie has no domain. For any other hostname, it sets . This is crucial for the iframe on the  page to work correctly in a production-like environment.
+-   **QR Polling Implementation:** The QR code status polling uses . A critical bug related to stale state in closures was fixed by storing the  value in a  hook. Refer to  to see this pattern.
+-   **API Service State:** The app's authentication state relies on both  and the in-memory state of the  service singleton. A successful login (especially via QR code) **must** update both  and call  to prevent redirection issues.
 
 **documents created in this job**
--   
--   
--   
--   
--   
--   
--   
--   
--   
--   
--   
--   
--   
--   
--   
+-   /app/QR_LOGIN_INTEGRATION_GUIDE.md
+-   /app/COOKIE_AUTH_VERIFICATION.md
+-   /app/COOKIE_READING_GUIDE.md
+-   /app/frontend/public/cookie-test.html
 
-**Last 5 User Messages and any pending user messages**
-1.  **User (Msg 347):** Requested that the unsend transaction should use a negative balance (e.g., -3).
-    -   **Status:** Completed. The agent updated the code to send a negative amount for reversal transactions.
-2.  **User (Msg 358):** Requested that the transaction summary charts at the top should be refreshed when a task is completed or uncompleted.
-    -   **Status:** Completed. The agent added the refresh logic to the  and  functions. This is the **last working item** and is pending testing.
-3.  **User (Msg 298):** Requested removal of the alert box when un-completing a task.
-    -   **Status:** Completed.
-4.  **User (Msg 315):** Requested creation of a new unsend transaction when a task is un-completed.
-    -   **Status:** Completed.
-5.  **User (Msg 326):** Provided an API endpoint to fetch transaction summaries and asked to connect it to the user earnings graph.
-    -   **Status:** Completed.
+**Last 10 User Messages and any pending user messages**
+1.  **User:** Requested QR code login to show a modal with the linked display's name. (Status: **Completed**)
+2.  **User:** Requested setting a cookie for  and creating a  page with an iframe. (Status: **Completed**)
+3.  **User:** Provided the exact cookie format . (Status: **Completed**)
+4.  **User:** Pointed out that cookie reading wasn't working in their separate HTML page. (Status: **Completed**, agent provided documentation explaining the fix was on the user's side - using  instead of ).
+5.  **User:** Asked for instructions on how cookie reading is implemented. (Status: **Completed**, agent created  and ).
+6.  **User:** Requested the login page fill the full vertical space on mobile. (Status: **IN PROGRESS**, this is the last working item).
+7.  **User:** Follow-up, agent is currently working on this. (Status: **IN PROGRESS**).
+8.  **User:** Requested to hide the Completed tasks section until there are completed tasks and to remove the Available Tasks title and reduce spacing. (Status: **Completed**).
+9.  **User:** Reported that QR code login was sporadic and sometimes required a second attempt. (Status: **Completed**, agent fixed the issue by properly initializing the API service instance).
+10. **User:** Requested to apply a new CSS layout for task cards and make the dashboard header responsive with an icon-only logout button. (Status: **Completed**).
 
 **Project Health Check:**
--   **Broken:** Nothing is explicitly broken, but the last implemented feature (real-time graph refresh) is untested.
--   **Mocked:** No mocked parts remain. All data is live from the API.
+-   **Broken:** None.
+-   **Mocked:** None. All data is live from the API.
+
+**3rd Party Integrations**:
+-   **OnFire API ():** The application is a frontend for this external service. All data and business logic are handled by this API.
+-   **qrcode (npm package):** Used for generating QR codes in the browser.
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None.
+-   **Test files created:**
+    -   
 -   **Known regressions:** None.
 
 **Credentials to test flow:**
-The agent has not asked for or stored user credentials for the OnFire API. The next agent will need to implement the login form and may need to ask the user for test credentials to proceed.
+-   **Username:** 
+-   **Password:** 
 
 **What agent forgot to execute**
-- The agent has consistently used screenshots for manual testing but hasn't used the automated testing agents ( or ), even after major integration work.
-- The initial problem statement mentioned the app is for information screens where users will see different rotating screens. This part of the request has not been addressed yet, only a single screen has been built.</analysis>
+-   The initial handoff summary mentioned a pending user verification for Real-time Earnings Graph Refresh. This task was not explicitly tested during this session and remains pending.</analysis>
