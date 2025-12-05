@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Slideshow from "./pages/Slideshow";
 import onFireAPI from "./services/api";
 import "./App.css";
 
@@ -20,6 +21,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/slideshow" 
+            element={
+              <ProtectedRoute>
+                <Slideshow />
               </ProtectedRoute>
             } 
           />
