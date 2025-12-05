@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Cookie Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        strong {
+            color: #667eea;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JWT Cookie Test Page</h1>
+        
+        <div id="result"></div>
+        
+        <button onclick="runTest()">🔄 Run Test</button>
+        <button onclick="showCookieDetails()">📋 Cookie Details</button>
+        <button onclick="testApiCall()">🌐 Test API Call</button>
+        
+        <div id="details" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        // Cookie reading function
+        function getJwtFromCookie() {
+            const match = document.cookie.match(/jwt=([^;]+)/);
+            return match ? match[1] : null;
+        }
+
+        // Decode JWT payload
+        function decodeJwtPayload(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = decodeURIComponent(
+                    atob(base64).split('').map(c => {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join('')
+                );
+                return JSON.parse(payload);
+            } catch (e) {
+                console.error('Failed to decode JWT:', e);
+                return null;
+            }
+        }
+
+        // Main test function
+        function runTest() {
+            const resultDiv = document.getElementById('result');
+            const jwt = getJwtFromCookie();
+            
+            console.log('=== JWT COOKIE TEST ===');
+            console.log('All cookies:', document.cookie);
+            console.log('JWT token:', jwt);
+            
+            if (!jwt) {
+                resultDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ JWT Cookie Not Found</strong>
+                        <p>Please log in first at <a href="/">http://localhost:3000/</a></p>
+                        <p><small>Expected cookie name: <code>jwt</code></small></p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const payload = decodeJwtPayload(jwt);
+            
+            if (!payload) {
+                resultDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ Failed to Decode JWT</strong>
+                        <p>JWT cookie found but cannot be decoded.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Check expiration
+            const now = Math.floor(Date.now() / 1000);
+            const expired = now > payload.exp;
+            const remainingHours = Math.floor((payload.exp - now) / 3600);
+            
+            resultDiv.innerHTML = `
+                <div class="status ${expired ? 'error' : 'success'}">
+                    <strong>${expired ? '❌' : '✅'} JWT Cookie ${expired ? 'Expired' : 'Found & Valid'}</strong>
+                    <ul>
+                        <li><strong>User ID:</strong> ${payload.user_id || '(missing)'}</li>
+                        <li><strong>Email:</strong> ${payload.email || '(missing)'}</li>
+                        <li><strong>Role:</strong> ${payload.role || '(missing)'}</li>
+                        <li><strong>Issued:</strong> ${new Date(payload.iat * 1000).toLocaleString()}</li>
+                        <li><strong>Expires:</strong> ${new Date(payload.exp * 1000).toLocaleString()}</li>
+                        <li><strong>Status:</strong> ${expired ? '⚠️ Expired - Please re-login' : `✅ Valid for ${remainingHours} hours`}</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Show detailed cookie info
+        function showCookieDetails() {
+            const detailsDiv = document.getElementById('details');
+            const jwt = getJwtFromCookie();
+            
+            if (!jwt) {
+                detailsDiv.innerHTML = `
+                    <div class="status info">
+                        <strong>Cookie Information</strong>
+                        <ul>
+                            <li><strong>Domain:</strong> ${window.location.hostname}</li>
+                            <li><strong>Protocol:</strong> ${window.location.protocol}</li>
+                            <li><strong>All Cookies:</strong></li>
+                        </ul>
+                        <div class="code">${document.cookie || '(no cookies)'}</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const parts = jwt.split('.');
+            
+            detailsDiv.innerHTML = `
+                <div class="status info">
+                    <strong>Cookie Technical Details</strong>
+                    <ul>
+                        <li><strong>Domain:</strong> ${window.location.hostname}</li>
+                        <li><strong>Protocol:</strong> ${window.location.protocol}</li>
+                        <li><strong>JWT Length:</strong> ${jwt.length} characters</li>
+                        <li><strong>JWT Parts:</strong> ${parts.length} (Header.Payload.Signature)</li>
+                        <li><strong>JWT Preview:</strong></li>
+                    </ul>
+                    <div class="code">${jwt.substring(0, 100)}...</div>
+                </div>
+            `;
+        }
+
+        // Test API call
+        async function testApiCall() {
+            const detailsDiv = document.getElementById('details');
+            const jwt = getJwtFromCookie();
+            
+            if (!jwt) {
+                detailsDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ Cannot Test API</strong>
+                        <p>No JWT cookie found. Please log in first.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const payload = decodeJwtPayload(jwt);
+            
+            if (!payload || !payload.user_id) {
+                detailsDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ Invalid JWT</strong>
+                        <p>Cannot extract user_id from token.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            detailsDiv.innerHTML = `
+                <div class="status info">
+                    <strong>🔄 Testing API Call...</strong>
+                    <p>Fetching user details from OnFire API...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(
+                    `https://api2.onfire.so/users?id=eq.${payload.user_id}&select=first_name,last_name,email,profile_photo_url,avatar_url`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${jwt}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                console.log('API Response Status:', response.status);
+                
+                if (!response.ok) {
+                    detailsDiv.innerHTML = `
+                        <div class="status error">
+                            <strong>❌ API Call Failed</strong>
+                            <ul>
+                                <li><strong>Status:</strong> ${response.status} ${response.statusText}</li>
+                                <li><strong>URL:</strong> /users?id=eq.${payload.user_id}</li>
+                            </ul>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('API Response Data:', data);
+                
+                if (!data || data.length === 0) {
+                    detailsDiv.innerHTML = `
+                        <div class="status error">
+                            <strong>⚠️ No User Data</strong>
+                            <p>API call successful but no user found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const user = data[0];
+                const avatarUrl = user.profile_photo_url || user.avatar_url;
+                
+                detailsDiv.innerHTML = `
+                    <div class="status success">
+                        <strong>✅ API Call Successful!</strong>
+                        <ul>
+                            <li><strong>First Name:</strong> ${user.first_name || '(not set)'}</li>
+                            <li><strong>Last Name:</strong> ${user.last_name || '(not set)'}</li>
+                            <li><strong>Email:</strong> ${user.email}</li>
+                            <li><strong>Avatar URL:</strong> ${avatarUrl || '(not set)'}</li>
+                        </ul>
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" style="max-width: 100px; border-radius: 50%; margin-top: 10px;">` : ''}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('API Error:', error);
+                detailsDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>❌ API Error</strong>
+                        <p>${error.message}</p>
+                        <p><small>Check browser console for details.</small></p>
+                    </div>
+                `;
+            }
+        }
+
+        // Run test on page load
+        window.onload = function() {
+            runTest();
+        };
+    </script>
+</body>
+</html>
