@@ -236,8 +236,8 @@ const Login = () => {
       }
       
       // Store JWT as cookie for *.onfire.so domain
-      document.cookie = `onfire_access_token=${jwtToken}; domain=.onfire.so; path=/; max-age=86400; SameSite=None; Secure`;
-      console.log('✅ Cookie set for *.onfire.so domain');
+      document.cookie = `jwt=${jwtToken}; Domain=.onfire.so; Secure; Path=/`;
+      console.log('✅ Cookie "jwt" set for *.onfire.so domain');
       
       // IMPORTANT: Initialize onFireAPI instance variables
       // This is critical for isAuthenticated() to work
@@ -316,8 +316,8 @@ const Login = () => {
       }
       
       // Store JWT as cookie for *.onfire.so domain
-      document.cookie = `onfire_access_token=${jwtToken}; domain=.onfire.so; path=/; max-age=86400; SameSite=None; Secure`;
-      console.log('✅ Cookie set for *.onfire.so domain');
+      document.cookie = `jwt=${jwtToken}; Domain=.onfire.so; Secure; Path=/`;
+      console.log('✅ Cookie "jwt" set for *.onfire.so domain');
       
       // Initialize onFireAPI instance variables
       onFireAPI.accessToken = jwtToken;
