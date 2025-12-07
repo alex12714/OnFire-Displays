@@ -3,7 +3,7 @@ import './Slideshow.css';
 
 const Slideshow = () => {
   // Get the slideshow URL - can be made dynamic later
-  const slideshowUrl = 'https://api2.onfire.so/s/hybQ1';
+  const slideshowUrl = 'https://api2.onfire.so/s/slideshow';
 
   return (
     <div className="slideshow-container">
